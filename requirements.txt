@@ -1,0 +1,6 @@
+-e .    # adds root directory to path
+chromadb==0.5.3
+Flask==3.0.3
+numpy==1.26.4
+scikit-learn==1.5.0
+sentence-transformers==3.0.1
