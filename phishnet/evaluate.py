@@ -55,15 +55,15 @@ def EvaluatePhishNet(
     # evaluate
     print("Evaluating...")
     batch = []
-    for i, email in enumerate(loader()):
+    for i, email in enumerate(loader(), 1):
         y_true.append(email.phish_score)
         batch.append(email)
         if len(batch) >= batchsize:
             predictions = phishnet.rateEmails(batch)
             y_pred.extend(predictions)
             batch = []
-        if i & 16383:
-            printStats(y_pred, y_true)
+        if i & 8191 == 0:
+            printStats(y_true, y_pred)
     if batch:
         predictions = phishnet.rateEmails(batch)
         y_pred.extend(predictions)
@@ -72,7 +72,7 @@ def EvaluatePhishNet(
 
 
 def printStats(y_true: list[float], y_pred: list[float]):
-    cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.5, 1, 0))
+    cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.7, 1, 0))
     auroc = roc_auc_score(y_true, y_pred, labels=[0, 1])
     precision = cmatrix[1, 1] / np.sum(cmatrix[:, 1])  # TP / TP + FP
     recall = cmatrix[1, 1] / np.sum(cmatrix[1, :])  # TP / TP + FN
