@@ -32,15 +32,46 @@ def LoadDatasetLoader(name: str) -> LoaderType:
     return importlib.import_module(f"phishnet.dataset.load_{name}").load
 
 
-def EvaluatePhishNet(phishnet: PhishNet, loader: LoaderType):
+def EvaluatePhishNet(
+    phishnet: PhishNet, loader: LoaderType, train: bool, batchsize: int
+):
     y_true = []
     y_pred = []
 
-    for email in loader():
-        y_true.append(email.phish_score)
-        prediction = phishnet.rateEmail(email)
-        y_pred.append(prediction)
+    # train net
+    if train:
+        print("Training...")
+        phishnet.reset()
+        training_loader = LoadDatasetLoader("training")
+        batch = []
+        for email in training_loader():
+            batch.append(email)
+            if len(batch) >= batchsize:
+                phishnet.train(batch)
+                batch = []
+        if batch:
+            phishnet.train(batch)
 
+    # evaluate
+    print("Evaluating...")
+    batch = []
+    for i, email in enumerate(loader()):
+        y_true.append(email.phish_score)
+        batch.append(email)
+        if len(batch) >= batchsize:
+            predictions = phishnet.rateEmails(batch)
+            y_pred.extend(predictions)
+            batch = []
+        if i & 16383:
+            printStats(y_pred, y_true)
+    if batch:
+        predictions = phishnet.rateEmails(batch)
+        y_pred.extend(predictions)
+
+    printStats(y_true, y_pred)
+
+
+def printStats(y_true: list[float], y_pred: list[float]):
     cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.5, 1, 0))
     auroc = roc_auc_score(y_true, y_pred, labels=[0, 1])
     precision = cmatrix[1, 1] / np.sum(cmatrix[:, 1])  # TP / TP + FP
@@ -75,8 +106,18 @@ if __name__ == "__main__":
         default="curated",
         help="Name of the dataset to use",
     )
+    parser.add_argument(
+        "-t", "--train", type=bool, default=False, help="Whether to train the net"
+    )
+    parser.add_argument(
+        "-b",
+        "--batchsize",
+        type=int,
+        default=128,
+        help="Number of emails to process at once",
+    )
     args = parser.parse_args()
 
     phishnet = LoadNet(args.net)
     loader = LoadDatasetLoader(args.dataset)
-    EvaluatePhishNet(phishnet, loader)
+    EvaluatePhishNet(phishnet, loader, args.train, args.batchsize)

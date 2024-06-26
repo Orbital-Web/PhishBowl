@@ -8,8 +8,8 @@ class LLMPhishNet(PhishNet):
     def __init__(self):
         super().__init__()
 
-    def rateScreenshot(self, file) -> float:
+    def rateScreenshots(self, files) -> list[float]:
         return 1
 
-    def rateEmail(self, email: Email) -> float:
+    def rateEmails(self, email: list[Email]) -> list[float]:
         return random.random()

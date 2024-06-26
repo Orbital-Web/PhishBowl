@@ -22,26 +22,26 @@ class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails from a screenshot."""
 
     @abstractmethod
-    def rateScreenshot(self, file) -> float:
-        """Rates how likely the given screenshot contains a phishing email.
+    def rateScreenshots(self, file) -> list[float]:
+        """Rates how likely the given screenshots contain a phishing email.
 
         Args:
-            file (_type_): Screenshot of email to test.
+            file (_type_): Screenshots of email to test.
 
         Returns:
-            float: Liklihood of screenshot containing a phishing email.
+            float: Liklihood of each screenshot containing a phishing email.
         """
         pass
 
     @abstractmethod
-    def rateEmail(self, email: Email) -> float:
-        """Rates how likely a given email is a phishing email.
+    def rateEmails(self, email: list[Email]) -> list[float]:
+        """Rates how likely the given emails are a phishing email.
 
         Args:
-            email (Email): Email to test.
+            email (list[Email]): Emails to test.
 
         Returns:
-            float: Liklihood of email being a phishing email.
+            list[float]: Liklihood of each email being a phishing email.
         """
         pass
 

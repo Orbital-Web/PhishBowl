@@ -1,6 +1,10 @@
 # Extacted Dataset
-**/dataset/**
-!**/dataset/**.py
+phishnet/dataset/**
+!phishnet/dataset/*.py
+
+
+# Chroma Database
+phishnet/database
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

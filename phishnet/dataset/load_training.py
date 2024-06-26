@@ -9,7 +9,7 @@ csv.field_size_limit(0xFFFFFF)  # max 0x7FFFFFFF
 
 def load() -> Iterator[Email]:
     path = "phishnet/dataset/"
-    dataset = "CuratedDataset"
+    dataset = "CuratedTraining"
 
     # extract if necessary
     if not os.path.exists(f"{path}{dataset}"):
@@ -22,19 +22,7 @@ def load() -> Iterator[Email]:
             zipfile.extractall(path)
 
     # load dataset
-    for file in ("Enron", "Ling"):
-        print(f"Loading dataset {file}")
-
-        with open(f"{path}{dataset}/{file}.csv", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            next(reader)  # skip header
-
-            for row in reader:
-                if len(row) < 3 or not row[1]:
-                    continue
-                yield Email(subject=row[0], body=row[1], phish_score=row[2])
-
-    for file in ("CEAS_08", "SpamAssasin", "TREC_06", "TREC_07"):
+    for file in ("Nazario_5", "Nigerian_5", "TREC_05"):
         print(f"Loading dataset {file}")
 
         with open(f"{path}{dataset}/{file}.csv", encoding="utf-8") as f:
