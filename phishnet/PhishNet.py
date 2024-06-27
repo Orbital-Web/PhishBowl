@@ -9,12 +9,14 @@ class Email:
         subject: str = "",
         sender: str = "",
         body: str = "",
-        phish_score: float = 0,
+        phish_score: float = 0.0,
     ):
+        # email content
         self.subject: str = subject
         self.sender: str = sender
         self.body: str = body
-        # utility
+
+        # metadata
         self.phish_score: float = float(phish_score)
 
 
@@ -22,11 +24,11 @@ class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails from a screenshot."""
 
     @abstractmethod
-    def rateScreenshots(self, file) -> list[float]:
+    def rateScreenshots(self, files) -> list[float]:
         """Rates how likely the given screenshots contain a phishing email.
 
         Args:
-            file (_type_): Screenshots of email to test.
+            files (_type_): Screenshots of emails to test.
 
         Returns:
             float: Liklihood of each screenshot containing a phishing email.
@@ -34,11 +36,11 @@ class PhishNet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def rateEmails(self, email: list[Email]) -> list[float]:
+    def rateEmails(self, emails: list[Email]) -> list[float]:
         """Rates how likely the given emails are a phishing email.
 
         Args:
-            email (list[Email]): Emails to test.
+            emails (list[Email]): Emails to test.
 
         Returns:
             list[float]: Liklihood of each email being a phishing email.
