@@ -17,13 +17,13 @@ class SemanticSearchPhishNet(PhishNet):
 
     def __init__(self):
         self.client = chromadb.PersistentClient(path="phishnet/database")
-        self.createCollection()
+        self.initialize_collection()
         self.train_batchsize = 2048
         self.comparison_size = 12
 
-    def rateEmails(self, emails: Emails) -> list[float]:
+    def rate(self, emails: Emails) -> list[float]:
         matches = self.collection.query(
-            query_texts=self.formatEmails(emails),
+            query_texts=self.format_emails(emails),
             n_results=self.comparison_size,
             include=["metadatas", "distances"],
         )
@@ -35,10 +35,10 @@ class SemanticSearchPhishNet(PhishNet):
             phish_scores.append(np.dot(weights, scores))
         return phish_scores
 
-    def train(self, dataset: DatasetDict) -> float:
+    def train(self, dataset: DatasetDict):
         dataset["train"] = dataset["train"].shuffle()
         dataset["train"] = dataset["train"].map(
-            self.processEmailsForTraining, batched=True
+            self.preprocess_training_emails, batched=True
         )
         for i in range(0, dataset["train"].num_rows, self.train_batchsize):
             batch = dataset["train"][i : i + self.train_batchsize]
@@ -51,9 +51,9 @@ class SemanticSearchPhishNet(PhishNet):
 
     def reset(self):
         self.client.delete_collection(name="SSPN")
-        self.createCollection()
+        self.initialize_collection()
 
-    def createCollection(self):
+    def initialize_collection(self):
         """Builds a collection to store embeddings."""
         self.collection = self.client.get_or_create_collection(
             name="SSPN",
@@ -64,7 +64,7 @@ class SemanticSearchPhishNet(PhishNet):
         )
 
     @staticmethod
-    def formatEmails(emails: Emails) -> list[str]:
+    def format_emails(emails: Emails) -> list[str]:
         """Formats a list of emails to be encoded.
 
         Args:
@@ -81,7 +81,7 @@ class SemanticSearchPhishNet(PhishNet):
         ]
 
     @staticmethod
-    def processEmailsForTraining(emails: Emails) -> Emails:
+    def preprocess_training_emails(emails: Emails) -> Emails:
         """Formats a single email in place to be encoded. The formatted email is placed
         in a new `text` column.
 
@@ -91,5 +91,5 @@ class SemanticSearchPhishNet(PhishNet):
         Returns:
             Emails: Modified emails with their formatted text.
         """
-        emails["text"] = SemanticSearchPhishNet.formatEmails(emails)
+        emails["text"] = SemanticSearchPhishNet.format_emails(emails)
         return emails

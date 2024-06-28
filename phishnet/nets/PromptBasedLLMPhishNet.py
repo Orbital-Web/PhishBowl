@@ -38,30 +38,29 @@ class PromptBasedLLMPhishNet(PhishNet):
             + "avoid incorrectly marking legitimate emails as phishing."
         )
 
-    def rateScreenshots(self, files) -> list[float]:
-        return 1
-
-    def rateEmails(self, emails: Emails) -> list[float]:
-        for document in self.formatEmails(emails):
+    def rate(self, emails: Emails) -> list[float]:
+        for document in self.format_emails(emails):
             messages = [
                 {"role": "system", "content": self.prompt},
                 {"role": "user", "content": document},
             ]
             response = self.chatbot(messages)
             print(response)
-        exit()
+            exit()
 
     @staticmethod
-    def formatEmails(emails: Emails) -> list[str]:
+    def format_emails(emails: Emails) -> list[str]:
         """Formats a list of emails to be encoded.
 
         Args:
-            emails (list[Email]): List of emails to format.
+            emails (Emails): Group of emails to format.
 
         Returns:
             list[str]: Formatted string of each email.
         """
         return [
-            f"From: {email.sender or 'unknown'}\nSubject: {email.subject}\nBody: {email.body}"
-            for email in emails
+            f"From: {sender or 'unknown'}\nSubject: {subject}\nBody: {body}"
+            for sender, subject, body in zip(
+                emails["sender"], emails["subject"], emails["body"]
+            )
         ]

@@ -1,11 +1,7 @@
 from phishnet.PhishNet import PhishNet, Emails
 from transformers import AutoTokenizer
-from huggingface_hub import login
-from dotenv import load_dotenv
-import os
+from datasets import DatasetDict
 import logging
-
-load_dotenv()
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -22,11 +18,20 @@ class FineTunedLLMPhishNet(PhishNet):
     def rateScreenshots(self, files) -> list[float]:
         return 1
 
-    def rateEmails(self, emails: Emails) -> list[float]:
+    def rate(self, emails: Emails) -> list[float]:
         return 0
 
-    def train(self, *args, **kwargs):
+    def train(self, dataset: DatasetDict):
         pass
 
     def reset(self):
         pass
+
+    def tokenizeEmails(self, emails: Emails):
+        texts = [
+            f"From: {sender or 'unknown'}\nSubject: {subject}\nBody: {body}"
+            for sender, subject, body in zip(
+                emails["sender"], emails["subject"], emails["body"]
+            )
+        ]
+        return self.tokenizer(texts, truncation=True)

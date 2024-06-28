@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def LoadNet(name: str) -> PhishNet:
+def load_net(name: str) -> PhishNet:
     """Loads the given PhishNet model.
 
     Args:
@@ -21,7 +21,7 @@ def LoadNet(name: str) -> PhishNet:
     return getattr(importlib.import_module(f"phishnet.nets.{name}"), name)()
 
 
-def EvaluatePhishNet(phishnet: PhishNet, train: bool, batchsize: int):
+def evaluate_phishnet(phishnet: PhishNet, train: bool, batchsize: int):
     y_true = []
     y_pred = []
 
@@ -38,15 +38,15 @@ def EvaluatePhishNet(phishnet: PhishNet, train: bool, batchsize: int):
     for i in range(0, dataset["test"].num_rows, batchsize):
         batch = dataset["test"][i : i + batchsize]
         y_true.extend(batch["label"])
-        predictions = phishnet.rateEmails(batch)
+        predictions = phishnet.rate(batch)
         y_pred.extend(predictions)
         if i % 4096 < batchsize:
-            printStats(y_true, y_pred)
+            print_performances(y_true, y_pred)
 
-    printStats(y_true, y_pred)
+    print_performances(y_true, y_pred)
 
 
-def printStats(y_true: list[float], y_pred: list[float]):
+def print_performances(y_true: list[float], y_pred: list[float]):
     cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.5, 1, 0))
     auroc = roc_auc_score(y_true, y_pred, labels=[0, 1])
     precision = cmatrix[1, 1] / np.sum(cmatrix[:, 1])  # TP / TP + FP
@@ -91,5 +91,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    phishnet = LoadNet(args.net)
-    EvaluatePhishNet(phishnet, args.train, args.batchsize)
+    phishnet = load_net(args.net)
+    evaluate_phishnet(phishnet, args.train, args.batchsize)

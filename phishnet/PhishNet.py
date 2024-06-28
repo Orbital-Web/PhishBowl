@@ -16,7 +16,7 @@ class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails."""
 
     @abstractmethod
-    def rateEmails(self, emails: Emails) -> list[float]:
+    def rate(self, emails: Emails) -> list[float]:
         """Rates how likely the given emails are a phishing email.
 
         Args:
