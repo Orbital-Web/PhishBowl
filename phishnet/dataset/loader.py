@@ -26,14 +26,18 @@ def load_files(files: list[str]) -> Dataset:
     return Dataset.from_pandas(df, preserve_index=False)
 
 
-def load(test_split: float = 0.2, shuffle: bool = False) -> DatasetDict:
+def load(
+    test_split: float = 0.2, shuffle: bool = True, consistent_splits: bool = True
+) -> DatasetDict:
     """Loads all the emails and returns a dataset split into training and testing data.
-    Do not re-generate the dataset by calling this function again if `shuffle` is True,
-    as the emails in the training and testing dataset will be randomized.
 
     Args:
-        test_split (float, optional): ratio of dataset to use for testing. Defaults to 0.2
-        shuffle (bool, optional): Whether to shuffle the rows first then split. Defaults to False.
+        test_split (float, optional): Ratio of dataset to use for testing. Defaults to
+            0.2.
+        shuffle (bool, optional): Whether to shuffle the dataset. Defaults to False.
+        consistent_splits (bool, optional): If True, it will shuffle the dataset after
+            splitting, thus making every split consistent. If False, it will shuffle
+            before splitting, resulting in a new split each time. Defaults to True.
 
     Returns:
         DatasetDict: The generated dataset.
@@ -64,7 +68,12 @@ def load(test_split: float = 0.2, shuffle: bool = False) -> DatasetDict:
 
     # load dataset
     dataset = load_files(FILES)
-    dataset = dataset.train_test_split(test_size=test_split, shuffle=shuffle)
+    dataset = dataset.train_test_split(
+        test_size=test_split, shuffle=shuffle and not consistent_splits
+    )
+    if shuffle and consistent_splits:
+        dataset["train"] = dataset["train"].shuffle()
+        dataset["test"] = dataset["test"].shuffle()
 
     logger.info(f"Generated dataset:\n{dataset}")
     return dataset

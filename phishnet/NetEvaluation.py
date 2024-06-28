@@ -25,7 +25,7 @@ def evaluate_phishnet(phishnet: PhishNet, train: bool, batchsize: int):
     y_true = []
     y_pred = []
 
-    dataset = load(shuffle=False)
+    dataset = load(shuffle=True, consistent_splits=True)
 
     # train net
     if train:

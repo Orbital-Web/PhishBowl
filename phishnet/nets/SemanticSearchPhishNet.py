@@ -36,7 +36,6 @@ class SemanticSearchPhishNet(PhishNet):
         return phish_scores
 
     def train(self, dataset: DatasetDict):
-        dataset["train"] = dataset["train"].shuffle()
         dataset["train"] = dataset["train"].map(
             self.preprocess_training_emails, batched=True
         )
