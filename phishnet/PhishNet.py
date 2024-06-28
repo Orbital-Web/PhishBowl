@@ -1,54 +1,38 @@
 from abc import ABCMeta, abstractmethod
+from datasets import DatasetDict
+from typing import TypedDict
 
 
-class Email:
-    """A struct representing an email."""
+class Emails(TypedDict):
+    """A dictionary with fields "sender", "subject", and "body". Each field should have
+    a list of strings of the same length, specifying each email's contents."""
 
-    def __init__(
-        self,
-        subject: str = "",
-        sender: str = "",
-        body: str = "",
-        phish_score: float = 0.0,
-    ):
-        # email content
-        self.subject: str = subject
-        self.sender: str = sender
-        self.body: str = body
-
-        # metadata
-        self.phish_score: float = float(phish_score)
+    sender: list[str]
+    subject: list[str]
+    body: list[str]
 
 
 class PhishNet(metaclass=ABCMeta):
-    """A base class for detecting phishing emails from a screenshot."""
+    """A base class for detecting phishing emails."""
 
     @abstractmethod
-    def rateScreenshots(self, files) -> list[float]:
-        """Rates how likely the given screenshots contain a phishing email.
-
-        Args:
-            files (_type_): Screenshots of emails to test.
-
-        Returns:
-            float: Liklihood of each screenshot containing a phishing email.
-        """
-        pass
-
-    @abstractmethod
-    def rateEmails(self, emails: list[Email]) -> list[float]:
+    def rateEmails(self, emails: Emails) -> list[float]:
         """Rates how likely the given emails are a phishing email.
 
         Args:
-            emails (list[Email]): Emails to test.
+            emails (Emails): Group of emails to test.
 
         Returns:
             list[float]: Liklihood of each email being a phishing email.
         """
         pass
 
-    def train(self, *args, **kwargs):
-        """Trains the PhishNet. Some nets may not need pre-training."""
+    def train(self, dataset: DatasetDict, *args, **kwargs):
+        """Trains the PhishNet. Some nets may not need pre-training.
+
+        Args:
+            dataset (DatasetDict): Dataset to train on. Contains "train" and "test".
+        """
         pass
 
     def reset(self):

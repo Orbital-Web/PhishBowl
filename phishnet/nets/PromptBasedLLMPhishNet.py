@@ -1,10 +1,13 @@
-from phishnet.PhishNet import PhishNet, Email
+from phishnet.PhishNet import PhishNet, Emails
 from transformers import pipeline
 from huggingface_hub import login
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class PromptBasedLLMPhishNet(PhishNet):
@@ -38,7 +41,7 @@ class PromptBasedLLMPhishNet(PhishNet):
     def rateScreenshots(self, files) -> list[float]:
         return 1
 
-    def rateEmails(self, emails: list[Email]) -> list[float]:
+    def rateEmails(self, emails: Emails) -> list[float]:
         for document in self.formatEmails(emails):
             messages = [
                 {"role": "system", "content": self.prompt},
@@ -49,7 +52,7 @@ class PromptBasedLLMPhishNet(PhishNet):
         exit()
 
     @staticmethod
-    def formatEmails(emails: list[Email]) -> list[str]:
+    def formatEmails(emails: Emails) -> list[str]:
         """Formats a list of emails to be encoded.
 
         Args:

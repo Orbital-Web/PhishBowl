@@ -1,5 +1,13 @@
-from phishnet.PhishNet import PhishNet, Email
-import random
+from phishnet.PhishNet import PhishNet, Emails
+from transformers import AutoTokenizer
+from huggingface_hub import login
+from dotenv import load_dotenv
+import os
+import logging
+
+load_dotenv()
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class FineTunedLLMPhishNet(PhishNet):
@@ -7,13 +15,15 @@ class FineTunedLLMPhishNet(PhishNet):
     detect phishing emails."""
 
     def __init__(self):
-        pass
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "distilbert/distilbert-base-uncased"
+        )
 
     def rateScreenshots(self, files) -> list[float]:
         return 1
 
-    def rateEmails(self, emails: list[Email]) -> list[float]:
-        return random.random()
+    def rateEmails(self, emails: Emails) -> list[float]:
+        return 0
 
     def train(self, *args, **kwargs):
         pass

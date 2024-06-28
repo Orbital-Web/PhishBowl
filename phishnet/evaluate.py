@@ -1,11 +1,12 @@
-from phishnet.PhishNet import PhishNet, Email
+from phishnet.PhishNet import PhishNet
+from phishnet.dataset.loader import load
 import argparse
 import importlib
 from sklearn.metrics import confusion_matrix, roc_auc_score
 import numpy as np
-from typing import Callable, Iterator
+import logging
 
-LoaderType = Callable[[], Iterator[Email]]
+logger = logging.getLogger(__name__)
 
 
 def LoadNet(name: str) -> PhishNet:
@@ -20,59 +21,33 @@ def LoadNet(name: str) -> PhishNet:
     return getattr(importlib.import_module(f"phishnet.nets.{name}"), name)()
 
 
-def LoadDatasetLoader(name: str) -> LoaderType:
-    """Loads the given dataset loader.
-
-    Args:
-        name (str): Name of dataset.
-
-    Returns:
-        list[Email]: Loaded emails.
-    """
-    return importlib.import_module(f"phishnet.dataset.load_{name}").load
-
-
-def EvaluatePhishNet(
-    phishnet: PhishNet, loader: LoaderType, train: bool, batchsize: int
-):
+def EvaluatePhishNet(phishnet: PhishNet, train: bool, batchsize: int):
     y_true = []
     y_pred = []
 
+    dataset = load(shuffle=False)
+
     # train net
     if train:
-        print("Training...")
+        logger.info("Training...")
         phishnet.reset()
-        training_loader = LoadDatasetLoader("training")
-        batch = []
-        for email in training_loader():
-            batch.append(email)
-            if len(batch) >= batchsize:
-                phishnet.train(batch)
-                batch = []
-        if batch:
-            phishnet.train(batch)
+        phishnet.train(dataset)
 
     # evaluate
-    print("Evaluating...")
-    batch = []
-    for i, email in enumerate(loader(), 1):
-        y_true.append(email.phish_score)
-        batch.append(email)
-        if len(batch) >= batchsize:
-            predictions = phishnet.rateEmails(batch)
-            y_pred.extend(predictions)
-            batch = []
-        if i & 8191 == 0:
-            printStats(y_true, y_pred)
-    if batch:
+    logger.info("Evaluating...")
+    for i in range(0, dataset["test"].num_rows, batchsize):
+        batch = dataset["test"][i : i + batchsize]
+        y_true.extend(batch["label"])
         predictions = phishnet.rateEmails(batch)
         y_pred.extend(predictions)
+        if i % 4096 < batchsize:
+            printStats(y_true, y_pred)
 
     printStats(y_true, y_pred)
 
 
 def printStats(y_true: list[float], y_pred: list[float]):
-    cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.7, 1, 0))
+    cmatrix = confusion_matrix(y_true, np.where(np.array(y_pred) >= 0.5, 1, 0))
     auroc = roc_auc_score(y_true, y_pred, labels=[0, 1])
     precision = cmatrix[1, 1] / np.sum(cmatrix[:, 1])  # TP / TP + FP
     recall = cmatrix[1, 1] / np.sum(cmatrix[1, :])  # TP / TP + FN
@@ -91,6 +66,7 @@ def printStats(y_true: list[float], y_pred: list[float]):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-n",
@@ -100,14 +76,11 @@ if __name__ == "__main__":
         help="Name of the net to use",
     )
     parser.add_argument(
-        "-d",
-        "--dataset",
-        type=str,
-        default="curated",
-        help="Name of the dataset to use",
-    )
-    parser.add_argument(
-        "-t", "--train", type=bool, default=False, help="Whether to train the net"
+        "-t",
+        "--train",
+        default=False,
+        help="Whether to train the net",
+        action="store_true",
     )
     parser.add_argument(
         "-b",
@@ -119,5 +92,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     phishnet = LoadNet(args.net)
-    loader = LoadDatasetLoader(args.dataset)
-    EvaluatePhishNet(phishnet, loader, args.train, args.batchsize)
+    EvaluatePhishNet(phishnet, args.train, args.batchsize)
