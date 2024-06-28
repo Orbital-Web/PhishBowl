@@ -2,9 +2,11 @@
 phishnet/dataset/**
 !phishnet/dataset/*.py
 
-
 # Chroma Database
 phishnet/database
+
+# Transformer Models
+phishnet/models
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

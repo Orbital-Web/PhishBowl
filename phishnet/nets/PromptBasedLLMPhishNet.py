@@ -15,7 +15,7 @@ class PromptBasedLLMPhishNet(PhishNet):
     detect phishing emails."""
 
     def __init__(self):
-        login(token=os.environ.get("HUGGINGFACE_TOKEN"))
+        login(token=os.environ.get("HUGGINGFACE_TOKEN_READ"))
         self.pipline = pipeline(
             "text-generation", model="mistralai/Mistral-7B-Instruct-v0.3"
         )
