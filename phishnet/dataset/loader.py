@@ -22,6 +22,7 @@ def load_files(files: list[str]) -> Dataset:
     df = pd.concat(dataframes, join="outer", ignore_index=True)[FEATURES]
     df.fillna({"sender": "", "subject": ""}, inplace=True)
     df.dropna(inplace=True)
+    df.drop_duplicates(inplace=True)
     return Dataset.from_pandas(df, preserve_index=False)
 
 

@@ -17,13 +17,8 @@ class SemanticSearchPhishNet(PhishNet):
 
     def __init__(self):
         self.client = chromadb.PersistentClient(path="phishnet/database")
-        self.collection = self.client.get_or_create_collection(
-            name="SSPN",
-            # embedding_functions=embedding_functions.SentenceTransformerEmbeddingFunction(
-            #     model_name="Salesforce/SFR-Embedding-2_R"
-            # ),
-            metadata={"hnsw:space": "l2"},
-        )
+        self.createCollection()
+        self.train_batchsize = 2048
         self.comparison_size = 12
 
     def rateEmails(self, emails: Emails) -> list[float]:
@@ -45,19 +40,21 @@ class SemanticSearchPhishNet(PhishNet):
         dataset["train"] = dataset["train"].map(
             self.processEmailsForTraining, batched=True
         )
-        for i in range(0, dataset["train"].num_rows, 256):
-            batch = dataset["train"][i : i + 256]
+        for i in range(0, dataset["train"].num_rows, self.train_batchsize):
+            batch = dataset["train"][i : i + self.train_batchsize]
             documents = batch["text"]
             metadatas = [{"phish_score": label} for label in batch["label"]]
             ids = [hashlib.sha256(doc.encode("utf-8")).hexdigest() for doc in documents]
-
             self.collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
-            if i % 8192 < 256:
-                logger.info(f"Ingested {i} documents")
+            logger.info(f"Ingested {i + self.train_batchsize} documents")
 
     def reset(self):
         self.client.delete_collection(name="SSPN")
+        self.createCollection()
+
+    def createCollection(self):
+        """Builds a collection to store embeddings."""
         self.collection = self.client.get_or_create_collection(
             name="SSPN",
             # embedding_functions=embedding_functions.SentenceTransformerEmbeddingFunction(
