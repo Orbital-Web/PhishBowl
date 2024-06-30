@@ -1,9 +1,9 @@
-from phishnet.PhishNet import PhishNet
-from phishnet.dataset.loader import load
-import argparse
+from phishnet.models import PhishNet
+from phishnet.services.data import load_emails
 import importlib
 from sklearn.metrics import confusion_matrix, roc_auc_score
 import numpy as np
+import asyncio
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,14 +18,13 @@ def load_net(name: str) -> PhishNet:
     Returns:
         PhishNet: Loaded model.
     """
-    return getattr(importlib.import_module(f"phishnet.nets.{name}"), name)()
+    return getattr(importlib.import_module(f"phishnet.services.{name}"), name)()
 
 
-def evaluate_phishnet(phishnet: PhishNet, train: bool, batchsize: int):
-    y_true = []
-    y_pred = []
-
-    dataset = load(shuffle=True, consistent_splits=True)
+def evaluate_phishnet(net_name: str, train: bool, batchsize: int):
+    logger.info("Loading phishnet...")
+    phishnet = load_net(net_name)
+    dataset = load_emails()
 
     # train net
     if train:
@@ -35,10 +34,12 @@ def evaluate_phishnet(phishnet: PhishNet, train: bool, batchsize: int):
 
     # evaluate
     logger.info("Evaluating...")
+    y_true = []
+    y_pred = []
     for i in range(0, dataset["test"].num_rows, batchsize):
         batch = dataset["test"][i : i + batchsize]
         y_true.extend(batch["label"])
-        predictions = phishnet.rate(batch)
+        predictions = asyncio.run(phishnet.rate(batch))
         y_pred.extend(predictions)
         if i % 4096 < batchsize:
             print_performances(y_true, y_pred)
@@ -63,33 +64,3 @@ def print_performances(y_true: list[float], y_pred: list[float]):
     print(f"Recall:    {recall:.4f}")
     # row: truth, columns: predicted
     print(f"Confusion Matrix:\n{cmatrix}")
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-n",
-        "--net",
-        type=str,
-        default="SemanticSearchPhishNet",
-        help="Name of the net to use",
-    )
-    parser.add_argument(
-        "-t",
-        "--train",
-        default=False,
-        help="Whether to train the net",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-b",
-        "--batchsize",
-        type=int,
-        default=128,
-        help="Number of emails to process at once",
-    )
-    args = parser.parse_args()
-
-    phishnet = load_net(args.net)
-    evaluate_phishnet(phishnet, args.train, args.batchsize)

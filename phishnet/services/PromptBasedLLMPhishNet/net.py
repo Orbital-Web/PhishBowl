@@ -1,13 +1,10 @@
-from phishnet.PhishNet import PhishNet, Emails
-from transformers import pipeline
+from phishnet.models import Emails, PhishNet
 from huggingface_hub import login
-from dotenv import load_dotenv
+from transformers import pipeline
 import os
 import logging
 
-load_dotenv()
-
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class PromptBasedLLMPhishNet(PhishNet):
@@ -38,7 +35,7 @@ class PromptBasedLLMPhishNet(PhishNet):
             + "avoid incorrectly marking legitimate emails as phishing."
         )
 
-    def rate(self, emails: Emails) -> list[float]:
+    async def rate(self, emails: Emails) -> list[float]:
         for document in self.format_emails(emails):
             messages = [
                 {"role": "system", "content": self.prompt},

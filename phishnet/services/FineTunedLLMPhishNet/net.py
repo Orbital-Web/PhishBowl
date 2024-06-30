@@ -1,4 +1,5 @@
-from phishnet.PhishNet import PhishNet, Emails
+from phishnet.models import Emails, PhishNet
+from huggingface_hub import login
 from transformers import (
     AutoTokenizer,
     DataCollatorWithPadding,
@@ -10,13 +11,11 @@ from transformers import (
 from datasets import DatasetDict
 import evaluate
 import numpy as np
-from huggingface_hub import login
-from dotenv import load_dotenv
-import logging
 import os
+import logging
 
-load_dotenv()
-logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger(__name__)
 
 
 class FineTunedLLMPhishNet(PhishNet):
@@ -32,16 +31,13 @@ class FineTunedLLMPhishNet(PhishNet):
         self.metrics = {"accuracy": evaluate.load("accuracy")}
         self.id2label = {0: "LEGITIMATE", 1: "PHISHING"}
         self.label2id = {"LEGITIMATE": 0, "PHISHING": 1}
-        self.modelpath = "phishnet/models/FTLLMPN"
+        self.model_path = "phishnet/services/FineTunedLLMPhishNet/models/FTLLMPN"
         self.model = None
         self.classifier = None
 
-    def rateScreenshots(self, files) -> list[float]:
-        return 1
-
-    def rate(self, emails: Emails) -> list[float]:
+    async def rate(self, emails: Emails) -> list[float]:
         if not self.classifier:
-            self.classifier = pipeline("text-classification", model=self.modelpath)
+            self.classifier = pipeline("text-classification", model=self.model_path)
         prediction = self.classifier(self.format_emails(emails))
         return [self.label2id(pred["label"]) * pred["score"] for pred in prediction]
 
@@ -54,7 +50,7 @@ class FineTunedLLMPhishNet(PhishNet):
         )
         tokenized_dataset = dataset.map(self.tokenize_emails, batched=True)
         training_args = TrainingArguments(
-            output_dir=self.modelpath,
+            output_dir=self.model_path,
             learning_rate=2e-5,
             per_device_train_batch_size=32,
             per_device_eval_batch_size=32,

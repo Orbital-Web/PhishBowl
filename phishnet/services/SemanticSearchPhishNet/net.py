@@ -1,10 +1,10 @@
-from phishnet.PhishNet import PhishNet, Emails
+from phishnet.models import Emails, PhishNet
 from datasets import DatasetDict
 import chromadb
 from chromadb.utils import embedding_functions
-import hashlib
 from scipy.special import softmax
 import numpy as np
+import hashlib
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,12 +16,13 @@ class SemanticSearchPhishNet(PhishNet):
     """
 
     def __init__(self):
-        self.client = chromadb.PersistentClient(path="phishnet/database")
+        self.database_path = "phishnet/services/SemanticSearchPhishNet/database"
+        self.client = chromadb.PersistentClient(path=self.database_path)
         self.initialize_collection()
         self.train_batchsize = 2048
         self.comparison_size = 12
 
-    def rate(self, emails: Emails) -> list[float]:
+    async def rate(self, emails: Emails) -> list[float]:
         matches = self.collection.query(
             query_texts=self.format_emails(emails),
             n_results=self.comparison_size,

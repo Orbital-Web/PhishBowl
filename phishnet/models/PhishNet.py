@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from datasets import DatasetDict
 from typing import TypedDict
 
 
@@ -16,7 +15,7 @@ class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails."""
 
     @abstractmethod
-    def rate(self, emails: Emails) -> list[float]:
+    async def rate(self, emails: Emails) -> list[float]:
         """Rates how likely the given emails are a phishing email.
 
         Args:
@@ -27,12 +26,8 @@ class PhishNet(metaclass=ABCMeta):
         """
         pass
 
-    def train(self, dataset: DatasetDict, *args, **kwargs):
-        """Trains the PhishNet. Some nets may not need pre-training.
-
-        Args:
-            dataset (DatasetDict): Dataset to train on. Contains "train" and "test".
-        """
+    def train(self, *args, **kwargs):
+        """Trains the PhishNet. Some nets may not need pre-training."""
         pass
 
     def reset(self):

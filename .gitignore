@@ -1,12 +1,14 @@
-# Extacted Dataset
-phishnet/dataset/**
-!phishnet/dataset/*.py
+# phishnet training and testing data
+phishnet/services/data/**
+!phishnet/services/data/**.py
 
-# Chroma Database
-phishnet/database
+# phishnet trained models
+phishnet/services/**/models
 
-# Transformer Models
-phishnet/models
+# phishnet databases
+phishnet/services/**/database
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
