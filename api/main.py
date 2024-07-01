@@ -1,9 +1,9 @@
-from phishnet.utils import evaluate_phishnet
+from utils import evaluate_phishnet
 from dotenv import load_dotenv
 from argparse import ArgumentParser
 import uvicorn
 import logging
-from typing import Literal
+import os
 
 
 def cli_parser() -> ArgumentParser:
@@ -17,7 +17,10 @@ def cli_parser() -> ArgumentParser:
     # run
     parser_run = subparsers.add_parser("run", help="runs the api in production mode")
     # dev
-    parser_dev = subparsers.add_parser("dev", help="runs the api in development mode")
+    parser_dev = subparsers.add_parser(
+        "dev",
+        help="runs the api in the mode specified in the env file",
+    )
     # evaluate
     parser_eval = subparsers.add_parser("eval", help="evaluates a phishnet")
     parser_eval.add_argument("net", help="name of phishnet to evaluate")
@@ -40,23 +43,23 @@ def cli_parser() -> ArgumentParser:
     return parser
 
 
-def run(mode: Literal["prod", "dev"] = "prod"):
-    """Runs the backend api server.
-
-    Args:
-        mode (str, optional): Whether to run in production or development mode. Defaults
-            to "prod".
-    """
-    if mode == "dev":
-        appip = "127.0.0.1"
-        autoreload = True
-        loglevel = "info"
-    else:
-        appip = "0.0.0.0"
-        autoreload = False
-        loglevel = "warning"
+def run():
+    """Runs the backend api server. Will either run in development, staging, or
+    production mode depending on the `env` environmental variable."""
+    env = os.environ.get("env", "prod")
+    match env:
+        case "prod":
+            autoreload = False
+            loglevel = "warning"
+        case "dev" | "stage":
+            autoreload = True
+            loglevel = "info"
+        case _:
+            raise ValueError(
+                f"Unknown environment {env} provided. env should be one of prod, stage or dev"
+            )
     uvicorn.run(
-        "router:app", host=appip, port=8000, reload=autoreload, log_level=loglevel
+        "router:app", host="0.0.0.0", port=8000, reload=autoreload, log_level=loglevel
     )
 
 
@@ -78,6 +81,8 @@ if __name__ == "__main__":
             logging.basicConfig(level=logging.INFO)
             run_tests()
         case "dev":
-            run("dev")
+            logging.basicConfig(level=logging.INFO)
+            os.environ["env"] = "dev"
+            run()
         case _:
             run()

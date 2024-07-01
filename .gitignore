@@ -1,12 +1,10 @@
-# phishnet training and testing data
-phishnet/services/data/**
-!phishnet/services/data/**.py
+# api training and testing data
+api/services/data/**
+!api/services/data/**.py
 
-# phishnet trained models
-phishnet/services/**/models
-
-# phishnet databases
-phishnet/services/**/database
+# phishnet trained models and databases
+api/services/phishnets/**/models
+api/services/phishnets/**/database
 
 
 

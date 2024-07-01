@@ -22,7 +22,7 @@ def load_emails(
     Returns:
         DatasetDict: The generated dataset.
     """
-    PATH = "phishnet/services/data/curated/"
+    PATH = "services/data/curated/"
     FILES = [
         f"{PATH}CEAS_08.csv",
         f"{PATH}Enron.csv",

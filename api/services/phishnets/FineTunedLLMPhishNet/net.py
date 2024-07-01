@@ -1,4 +1,4 @@
-from phishnet.models import Emails, PhishNet
+from models import Emails, PhishNet
 from huggingface_hub import login
 from transformers import (
     AutoTokenizer,
@@ -31,7 +31,7 @@ class FineTunedLLMPhishNet(PhishNet):
         self.metrics = {"accuracy": evaluate.load("accuracy")}
         self.id2label = {0: "LEGITIMATE", 1: "PHISHING"}
         self.label2id = {"LEGITIMATE": 0, "PHISHING": 1}
-        self.model_path = "phishnet/services/FineTunedLLMPhishNet/models/FTLLMPN"
+        self.model_path = "services/phishnets/FineTunedLLMPhishNet/models/FTLLMPN"
         self.model = None
         self.classifier = None
 

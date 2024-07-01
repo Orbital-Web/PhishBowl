@@ -1,5 +1,5 @@
-from phishnet.models import PhishNet
-from phishnet.services.data import load_emails
+from models import PhishNet
+from services.data import load_emails
 import importlib
 from sklearn.metrics import confusion_matrix, roc_auc_score
 import numpy as np
@@ -18,7 +18,7 @@ def load_net(name: str) -> PhishNet:
     Returns:
         PhishNet: Loaded model.
     """
-    return getattr(importlib.import_module(f"phishnet.services.{name}"), name)()
+    return getattr(importlib.import_module(f"services.phishnets"), name)()
 
 
 def evaluate_phishnet(net_name: str, train: bool, batchsize: int):

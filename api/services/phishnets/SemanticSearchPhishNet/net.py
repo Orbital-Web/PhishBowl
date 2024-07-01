@@ -1,4 +1,4 @@
-from phishnet.models import Emails, PhishNet
+from models import Emails, PhishNet
 from datasets import DatasetDict
 import chromadb
 from chromadb.utils import embedding_functions
@@ -16,7 +16,7 @@ class SemanticSearchPhishNet(PhishNet):
     """
 
     def __init__(self):
-        self.database_path = "phishnet/services/SemanticSearchPhishNet/database"
+        self.database_path = "services/phishnets/SemanticSearchPhishNet/database"
         self.client = chromadb.PersistentClient(path=self.database_path)
         self.initialize_collection()
         self.train_batchsize = 2048

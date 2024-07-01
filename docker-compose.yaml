@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  # app:
+  #   image: app/app:latest
+  #   build:
+  #     context: ./app
+  #   env_file: ./app/.env
+  #   volumes:
+  #     - ./app:/app
+  #   ports:
+  #     - "8000:8000"
+
+  api:
+    image: api/api:latest
+    build:
+      context: ./api
+    env_file: ./api/.env
+    volumes:
+      - ./api:/app
+    ports:
+      - "8000:8000"

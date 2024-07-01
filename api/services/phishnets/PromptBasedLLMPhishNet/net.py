@@ -1,4 +1,4 @@
-from phishnet.models import Emails, PhishNet
+from models import Emails, PhishNet
 from huggingface_hub import login
 from transformers import pipeline
 import os
