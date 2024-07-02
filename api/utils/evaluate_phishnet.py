@@ -39,10 +39,9 @@ def evaluate_phishnet(net_name: str, train: bool, batchsize: int):
     for i in range(0, dataset["test"].num_rows, batchsize):
         batch = dataset["test"][i : i + batchsize]
         y_true.extend(batch["label"])
-        predictions = asyncio.run(phishnet.rate(batch))
+        predictions = asyncio.run(phishnet.analyze(batch))
         y_pred.extend(predictions)
-        if i % 4096 < batchsize:
-            print_performances(y_true, y_pred)
+        print_performances(y_true, y_pred)
 
     print_performances(y_true, y_pred)
 

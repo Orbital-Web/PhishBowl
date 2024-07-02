@@ -1,21 +1,30 @@
 from fastapi import FastAPI, UploadFile, HTTPException
+from contextlib import asynccontextmanager
 from schemas import Email, AnalysisResponse
-from services.phishnets import SemanticSearchPhishNet
+from models import Emails
+from services.phishbowl import load_phishbowl
+from services.phishnets import EnsemblePhishNet
 from services.imageprocessing import EmailImageProcessor
 from services.textprocessing import EmailTextProcessor
-from models import Emails
 import numpy as np
 import cv2
 
-app = FastAPI()
-phishnet = SemanticSearchPhishNet()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global phishbowl, phishnet
+    # startup
+    phishbowl = await load_phishbowl()
+    phishnet = EnsemblePhishNet(phishbowl)
+    yield
+    # cleanup
+
+
+app = FastAPI(lifespan=lifespan)
+phishbowl = None
+phishnet = None
 image_processor = EmailImageProcessor()
 text_processor = EmailTextProcessor()
-
-
-@app.get("/")
-async def root():
-    return {"message": "hello world!"}
 
 
 # email analysis
@@ -57,7 +66,7 @@ async def analyze_text(email_text: str, anonymize: bool = False) -> AnalysisResp
     Returns:
         AnalysisResponse: Response containing the analysis result.
     """
-    emails = await text_processor.process(email_text)
+    emails = await text_processor.from_text(email_text)
 
     # anonymize if requested
     if anonymize:
@@ -108,10 +117,10 @@ async def analyze_emails_batch(emails: Emails) -> list[AnalysisResponse]:
     Returns:
         list[AnalysisResponse]: Analysis result for each email.
     """
-    scores = await phishnet.rate(emails)
+    scores = await phishnet.analyze(emails)
     responses = []
     for score in scores:
         label = "PHISHING" if score >= 0.5 else "LEGITIMATE"
-        confidence = 2 * abs(score - 0.5)
+        confidence = min(1, 2 * abs(score - 0.5))
         responses.append(AnalysisResponse(label=label, confidence=confidence))
     return responses

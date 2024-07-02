@@ -35,7 +35,7 @@ class PromptBasedLLMPhishNet(PhishNet):
             + "avoid incorrectly marking legitimate emails as phishing."
         )
 
-    async def rate(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[float]:
         for document in self.format_emails(emails):
             messages = [
                 {"role": "system", "content": self.prompt},

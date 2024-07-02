@@ -34,7 +34,7 @@ def cli_parser() -> ArgumentParser:
         "-b",
         "--batchsize",
         type=int,
-        default=128,
+        default=2048,
         help="number of emails per batch when evaluating the phishnet",
     )
     # test

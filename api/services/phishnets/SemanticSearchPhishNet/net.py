@@ -22,7 +22,7 @@ class SemanticSearchPhishNet(PhishNet):
         self.train_batchsize = 2048
         self.comparison_size = 12
 
-    async def rate(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[float]:
         matches = self.collection.query(
             query_texts=self.format_emails(emails),
             n_results=self.comparison_size,

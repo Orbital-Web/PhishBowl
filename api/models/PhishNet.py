@@ -3,26 +3,27 @@ from typing import TypedDict
 
 
 class Emails(TypedDict):
-    """A dictionary with fields "sender", "subject", and "body". Each field should have
-    a list of strings of the same length, specifying each email's contents."""
+    """A dictionary representing multiple emails. Each field should be of the same
+    length, with the same indices corresponding to the same email."""
 
     sender: list[str]
     subject: list[str]
     body: list[str]
+    label: list[float]  # 1 for phishing, 0 for benign
 
 
 class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails."""
 
     @abstractmethod
-    async def rate(self, emails: Emails) -> list[float]:
-        """Rates how likely the given emails are a phishing email.
+    async def analyze(self, emails: Emails) -> list[float]:
+        """Analyzes each email on whether they're a phish or not.
 
         Args:
-            emails (Emails): Group of emails to test.
+            emails (Emails): Emails to analyze.
 
         Returns:
-            list[float]: Liklihood of each email being a phishing email.
+            list[float]: Liklihood of each email being a phish.
         """
         pass
 
