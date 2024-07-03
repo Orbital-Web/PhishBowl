@@ -35,7 +35,7 @@ class FineTunedLLMPhishNet(PhishNet):
         self.model = None
         self.classifier = None
 
-    async def rate(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[float]:
         if not self.classifier:
             self.classifier = pipeline("text-classification", model=self.model_path)
         prediction = self.classifier(self.format_emails(emails))

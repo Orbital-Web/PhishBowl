@@ -1,13 +1,12 @@
 FROM python:3.11-slim
 
-WORKDIR /app
-
 RUN apt-get update \
     && apt-get -y install tesseract-ocr
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+COPY ./requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /tmp/requirements.txt
 
+WORKDIR /app
 COPY . .
 
 ENV PYTHONPATH=/app

@@ -15,11 +15,13 @@ class PhishBowl:
     """A class for handling the phishing email dataset."""
 
     def __init__(self):
+        # database
         self.collection_name = "phishbowl"
         self.client = None
         self.collection = None
         self.email_processor = EmailTextProcessor()
         self.batchsize = 2048  # batchsize of emails to ingest at once
+        # analysis
         self.comparison_size = 12  # number of emails to use as reference when analyzing
         self.confidence_decay = 0.5  # positive value specifying how fast the confidence decays with distance
 
@@ -34,13 +36,13 @@ class PhishBowl:
             metadata={"hnsw:space": "l2"},
         )
 
-    async def ingest_emails(self, emails: Emails, anonymize: bool = False):
-        """Ingests the passed emails.
+    async def add_emails(self, emails: Emails, anonymize: bool = False):
+        """Adds the emails to the phishbowl.
 
         Args:
-            emails (Emails): Emails to ingest.
+            emails (Emails): Emails to add.
             anonymize (bool, optional): Whether to anonymize the emails first before
-                ingesting. Defaults to False.
+                adding. Defaults to False.
         """
         if anonymize:
             documents = await self.email_processor.anonymize(emails)
@@ -53,26 +55,55 @@ class PhishBowl:
         total_count = await self.collection.count()
         logger.info(f"Ingested {total_count} documents")
 
-    async def ingest_dataset(self, dataset: Dataset, anonymize: bool = False):
-        """Ingests emails in a dataset.
+    async def add_dataset(self, dataset: Dataset, anonymize: bool = False):
+        """Adds emails in the dataset to the phishbowl.
 
         Args:
-            dataset (Dataset): Dataset of emails to ingest.
+            dataset (Dataset): Dataset of emails to add.
             anonymize (bool, optional): Whether to anonymize the emails first before
-                ingesting. Defaults to False.
+                adding. Defaults to False.
         """
         for i in range(0, dataset.num_rows, self.batchsize):
             emails = dataset[i : i + self.batchsize]
-            await self.ingest_emails(emails, anonymize)
+            await self.add_emails(emails, anonymize)
 
-    async def clear_database(self):
-        """Removes all documents from the database. Use with care."""
+    async def count(self, where: dict = None) -> int:
+        """Returns the number of documents in the phishbowl. Count can be narrowed to
+        searching only documents of a specific type by specifying metadata filters.
+
+        Args:
+            where (dict, optional): Metadata filter to count only certain types of
+                documents. See https://docs.trychroma.com/guides#using-where-filters
+                for documentation on metadata filters.
+
+        Returns:
+            int: Number of matches.
+        """
+        # return entire collection count
+        if not where:
+            return await self.collection.count()
+        # return only those that match filter
+        matches = await self.collection.get(include=[], where=where)
+        return len(matches["ids"])
+
+    async def clear(self):
+        """Removes all documents from the phishbowl. Use with care."""
         await self.client.delete_collection(self.collection_name)
         await self.initialize_db()
 
+    async def delete_emails(self, emails: Emails):
+        """Removes the emails from the phishbowl.
+
+        Args:
+            emails (Emails): Emails to remove.
+        """
+        documents = await self.email_processor.to_text(emails)
+        ids = [hashlib.sha256(doc.encode("utf-8")).hexdigest() for doc in documents]
+        await self.collection.delete(ids=ids)
+
     async def analyze_emails(self, emails: Emails) -> list[float]:
-        """Compares the passed emails to the emails in the phishbowl and returns a score
-        between 0 and 1 for each email on their liklihood of being a phish.
+        """Compares the emails to the emails in the phishbowl and returns a score
+        between 0 and 1 for each email's liklihood of being a phish.
 
         Args:
             emails (Emails): Emails to analyze.
@@ -102,7 +133,7 @@ class PhishBowl:
 
 
 async def load_phishbowl() -> PhishBowl:
-    """Fully initializes and returns a PhishBowl"""
+    """Creates a fully initialized phishbowl."""
     phishbowl = PhishBowl()
     await phishbowl.initialize_db()
     return phishbowl

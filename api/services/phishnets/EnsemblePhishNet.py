@@ -18,7 +18,7 @@ class EnsemblePhishNet(PhishNet):
         return await self.phishbowl.analyze_emails(emails)
 
     def train(self, dataset: DatasetDict):
-        asyncio.run(self.phishbowl.ingest_dataset(dataset["train"]))
+        asyncio.run(self.phishbowl.add_dataset(dataset["train"]))
 
     def reset(self):
-        asyncio.run(self.phishbowl.clear_database())
+        asyncio.run(self.phishbowl.clear())

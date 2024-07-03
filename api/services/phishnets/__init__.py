@@ -1,4 +1,3 @@
 from .FineTunedLLMPhishNet import FineTunedLLMPhishNet
 from .PromptBasedLLMPhishNet import PromptBasedLLMPhishNet
-from .SemanticSearchPhishNet import SemanticSearchPhishNet
 from .EnsemblePhishNet import EnsemblePhishNet

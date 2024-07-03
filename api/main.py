@@ -31,6 +31,12 @@ def cli_parser() -> ArgumentParser:
         action="store_true",
     )
     parser_eval.add_argument(
+        "-r",
+        "--reset",
+        help="flag to reset the phishnet before evaluating",
+        action="store_true",
+    )
+    parser_eval.add_argument(
         "-b",
         "--batchsize",
         type=int,
@@ -54,12 +60,13 @@ def run():
         case "dev" | "stage":
             autoreload = True
             loglevel = "info"
+            logging.basicConfig(level=logging.INFO)
         case _:
             raise ValueError(
                 f"Unknown environment {env} provided. env should be one of prod, stage or dev"
             )
     uvicorn.run(
-        "router:app", host="0.0.0.0", port=8000, reload=autoreload, log_level=loglevel
+        "routers:app", host="0.0.0.0", port=8000, reload=autoreload, log_level=loglevel
     )
 
 
@@ -76,12 +83,11 @@ if __name__ == "__main__":
     match args.command:
         case "eval":
             logging.basicConfig(level=logging.INFO)
-            evaluate_phishnet(args.net, args.train, args.batchsize)
+            evaluate_phishnet(args.net, args.train, args.reset, args.batchsize)
         case "test":
             logging.basicConfig(level=logging.INFO)
             run_tests()
         case "dev":
-            logging.basicConfig(level=logging.INFO)
             os.environ["env"] = "dev"
             run()
         case _:

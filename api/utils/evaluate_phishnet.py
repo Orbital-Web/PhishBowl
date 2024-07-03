@@ -21,18 +21,22 @@ def load_net(name: str) -> PhishNet:
     return getattr(importlib.import_module(f"services.phishnets"), name)()
 
 
-def evaluate_phishnet(net_name: str, train: bool, batchsize: int):
+def evaluate_phishnet(net_name: str, train: bool, reset: bool, batchsize: int):
     logger.info("Loading phishnet...")
     phishnet = load_net(net_name)
     dataset = load_emails()
 
+    # reset net
+    if reset:
+        logger.info("Resetting...")
+        phishnet.reset()
+
     # train net
     if train:
         logger.info("Training...")
-        phishnet.reset()
         phishnet.train(dataset)
 
-    # evaluate
+    # evaluate net
     logger.info("Evaluating...")
     y_true = []
     y_pred = []
