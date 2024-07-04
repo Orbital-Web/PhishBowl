@@ -3,6 +3,7 @@ from services.data import load_emails
 import importlib
 from sklearn.metrics import confusion_matrix, roc_auc_score
 import numpy as np
+import pandas as pd
 import asyncio
 import logging
 
@@ -55,15 +56,26 @@ def print_performances(y_true: list[float], y_pred: list[float]):
     auroc = roc_auc_score(y_true, y_pred, labels=[0, 1])
     precision = cmatrix[1, 1] / np.sum(cmatrix[:, 1])  # TP / TP + FP
     recall = cmatrix[1, 1] / np.sum(cmatrix[1, :])  # TP / TP + FN
+    fpr = cmatrix[0, 1] / np.sum(cmatrix[0, :])  # FP / FP + TN
     accuracy = (cmatrix[1, 1] + cmatrix[0, 0]) / np.sum(cmatrix)
 
     print("\n--------Evaluations--------")
-    print(f"Accuracy:  {accuracy:.4f}")
+    print(f"Accuracy:   {accuracy:.4f}")
     # higher auroc means higher accuracy and confidence
-    print(f"AUROC:     {auroc:.4f}")
+    print(f"AUROC:      {auroc:.4f}")
     # higher precision means we less frequently mark an email incorrectly as phishing
-    print(f"Precision: {precision:.4f}")
+    print(f"Precision:  {precision:.4f}")
     # higher recall means we let less phishing emails get through
-    print(f"Recall:    {recall:.4f}")
-    # row: truth, columns: predicted
-    print(f"Confusion Matrix:\n{cmatrix}")
+    print(f"Recall:     {recall:.4f}")
+    # lower FPR means we less frequently mark an email incorrectly as phishing
+    print(f"FPR:        {fpr:.4f}")
+
+    # confusion table
+    cmatrix_table = pd.DataFrame(
+        data={
+            "|  ": ["Predicted| N", "Class| P"],
+            "N": cmatrix[0, :],
+            "P": cmatrix[1, :],
+        }
+    ).to_string(index=False)
+    print(f"            True Class\n          ____________\n{cmatrix_table}")
