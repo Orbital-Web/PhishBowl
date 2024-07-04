@@ -1,4 +1,3 @@
-from models import Emails
 import pytesseract
 from numpy.typing import NDArray
 import numpy as np
@@ -10,7 +9,7 @@ class EmailImageProcessor:
     def __init__(self):
         self.threshold = 80
 
-    async def process(self, image: NDArray[np.uint8]) -> str:
+    def process(self, image: NDArray[np.uint8]) -> str:
         """Extract the relevant text from an email screenshot.
 
         Args:

@@ -1,4 +1,8 @@
-from datasets import DatasetDict, Dataset
+from datasets import (
+    Dataset,
+    IterableDatasetDict,
+    load_dataset,
+)
 import pandas as pd
 import logging
 import os
@@ -6,43 +10,41 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def load_emails(
-    test_split: float = 0.2, shuffle: bool = True, consistent_splits: bool = True
-) -> DatasetDict:
-    """Loads all the emails and returns a dataset split into training and testing data.
+def preload_emails(savepath: str, test_ratio: float = 0.2, shuffle: bool = True):
+    """Preloads all the emails into memory, splits into test and training data, and
+    saves it under `savepath` as 2 csv files. Run this once to preload the emails so
+    that they can be lazily loaded in the future, reducing the memory footprint.
+    Note that preloading the emails multiple times will result in a different split
+    each time.
 
     Args:
-        test_split (float, optional): Ratio of dataset to use for testing. Defaults to
-            0.2.
-        shuffle (bool, optional): Whether to shuffle the dataset. Defaults to False.
-        consistent_splits (bool, optional): If True, it will shuffle the dataset after
-            splitting, thus making every split consistent. If False, it will shuffle
-            before splitting, resulting in a new split each time. Defaults to True.
-
-    Returns:
-        DatasetDict: The generated dataset.
+        savepath (str): Path to save the preloaded dataset to.
+        test_ratio (float, optional): Ratio of dataset to use as the test split.
+            Defaults to 0.2.
+        shuffle (bool, optional): Whether to shuffle the dataset first before splitting.
+            Defaults to True.
     """
-    PATH = "/app/services/data/curated/"
+    LOADPATH = "/app/services/data/curated/"
     FILES = [
-        f"{PATH}CEAS_08.csv",
-        f"{PATH}Enron.csv",
-        f"{PATH}Nazario_5.csv",
-        f"{PATH}Nigerian_5.csv",
-        f"{PATH}SpamAssasin.csv",
-        f"{PATH}TREC_05.csv",
-        f"{PATH}Ling.csv",
-        f"{PATH}TREC_06.csv",
-        f"{PATH}TREC_07.csv",
+        f"{LOADPATH}CEAS_08.csv",
+        f"{LOADPATH}Enron.csv",
+        f"{LOADPATH}Nazario_5.csv",
+        f"{LOADPATH}Nigerian_5.csv",
+        f"{LOADPATH}SpamAssasin.csv",
+        f"{LOADPATH}TREC_05.csv",
+        f"{LOADPATH}Ling.csv",
+        f"{LOADPATH}TREC_06.csv",
+        f"{LOADPATH}TREC_07.csv",
     ]
     FEATURES = ["sender", "subject", "body", "label"]
 
-    logger.info("Loading dataset...")
+    logger.info("Building dataset...")
 
     # validate files exists
     for filepath in FILES:
         if not os.path.exists(filepath):
             raise FileNotFoundError(
-                f"Missing file {filepath}! Make sure to download and extract the files from:\n"
+                f"Missing file {filepath}! Make sure to download the files from:\n"
                 + "  https://figshare.com/articles/dataset/Curated_Dataset_-_Phishing_Email/24899952\n"
                 + "  https://figshare.com/articles/dataset/Phishing_Email_11_Curated_Datasets/24952503\n"
             )
@@ -56,12 +58,40 @@ def load_emails(
 
     # create dataset
     dataset = Dataset.from_pandas(df, preserve_index=False)
-    dataset = dataset.train_test_split(
-        test_size=test_split, shuffle=shuffle and not consistent_splits
-    )
-    if shuffle and consistent_splits:
-        dataset["train"] = dataset["train"].shuffle()
-        dataset["test"] = dataset["test"].shuffle()
+    datasetdict = dataset.train_test_split(test_size=test_ratio, shuffle=shuffle)
 
-    logger.info(f"Generated dataset:\n{dataset}")
-    return dataset
+    logger.info("Saving dataset to disc...")
+    datasetdict["train"].to_csv(f"{savepath}/train.csv")
+    datasetdict["test"].to_csv(f"{savepath}/test.csv")
+
+
+def load_emails(test_ratio: float = 0.2, shuffle: bool = True) -> IterableDatasetDict:
+    """Lazily loads all the emails as an iterable datasetdict.
+
+    Args:
+        test_ratio (float, optional): Ratio of dataset to use as the test split.
+            Defaults to 0.2.
+        shuffle (bool, optional): Whether to shuffle the training and testing datasets.
+            Note that it only shuffles emails in the buffer. Defaults to True.
+
+    Returns:
+        IterableDatasetDict: The loaded datasetdict.
+    """
+    LOADPATH = "/app/services/data/"
+    TRAINFILE = f"{LOADPATH}train.csv"
+    TESTFILE = f"{LOADPATH}test.csv"
+
+    # preload emails if they haven't been loaded before.
+    # note that this will use a lot of memory.
+    if not os.path.exists(TRAINFILE) or not os.path.exists(TESTFILE):
+        preload_emails(LOADPATH, test_ratio, shuffle=True)
+
+    # lazy load the dataset from disc.
+    # this will not use as much memory, granted preload was not called.
+    logger.info("Loading dataset...")
+    datasetdict = load_dataset(
+        "csv", data_files={"train": TRAINFILE, "test": TESTFILE}, streaming=True
+    )
+    if shuffle:
+        datasetdict = datasetdict.shuffle(buffer_size=1024)
+    return datasetdict

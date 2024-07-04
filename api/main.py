@@ -1,4 +1,4 @@
-from utils import evaluate_phishnet
+from utils import evaluate_phishnet, populate_phishbowl
 from dotenv import load_dotenv
 from argparse import ArgumentParser
 import uvicorn
@@ -43,6 +43,16 @@ def cli_parser() -> ArgumentParser:
         default=2048,
         help="number of emails per batch when evaluating the phishnet",
     )
+    # populate
+    parser_populate = subparsers.add_parser(
+        "populate", help="populates the phishbowl with emails"
+    )
+    parser_populate.add_argument(
+        "-r",
+        "--reset",
+        help="flag to reset the phishbowl before populating",
+        action="store_true",
+    )
     # test
     parser_test = subparsers.add_parser("test", help="runs all tests")
 
@@ -84,6 +94,9 @@ if __name__ == "__main__":
         case "eval":
             logging.basicConfig(level=logging.INFO)
             evaluate_phishnet(args.net, args.train, args.reset, args.batchsize)
+        case "populate":
+            logging.basicConfig(level=logging.INFO)
+            populate_phishbowl(args.reset)
         case "test":
             logging.basicConfig(level=logging.INFO)
             run_tests()

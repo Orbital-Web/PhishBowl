@@ -7,7 +7,7 @@ class EmailTextProcessor:
     def __init__(self):
         pass
 
-    async def from_text(self, email_text: str) -> Emails:
+    def from_text(self, email_text: str) -> Emails:
         """Extract the email sender, subject, and body from the email text.
 
         Args:
@@ -19,7 +19,7 @@ class EmailTextProcessor:
         # TODO:
         return {"sender": [""], "subject": [""], "body": [email_text]}
 
-    async def to_text(self, emails: Emails) -> list[str]:
+    def to_text(self, emails: Emails) -> list[str]:
         """Converts emails to a list of formatted texts.
 
         Args:
@@ -35,7 +35,7 @@ class EmailTextProcessor:
             )
         ]
 
-    async def anonymize(self, emails: Emails) -> Emails:
+    def anonymize(self, emails: Emails) -> Emails:
         """Mask sensitive data from each email.
 
         Args:

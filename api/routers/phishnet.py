@@ -36,7 +36,7 @@ async def analyze_image(
     # convert image to email text
     contents = await file.read()
     image = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_GRAYSCALE)
-    email_text = await image_processor.process(image)
+    email_text = image_processor.process(image)
 
     # analyze
     response = await analyze_text(request, email_text, anonymize)
@@ -63,15 +63,15 @@ async def analyze_text(
     phishbowl: PhishBowl = request.app.phishbowl
     text_processor: EmailTextProcessor = request.app.text_processor
 
-    emails = await text_processor.from_text(email_text)
+    emails = text_processor.from_text(email_text)
     response = await analyze_emails_batch(phishnet, emails)
 
     # add to phishbowl if TODO:
     if False:
         # anonymize if requested
         if anonymize:
-            emails = await text_processor.anonymize(emails)
-        phishbowl.add_emails(emails)
+            emails = text_processor.anonymize(emails)
+        await phishbowl.add_emails(emails)
 
     return response[0]
 
@@ -107,8 +107,8 @@ async def analyze_email(
     if False:
         # anonymize if requested
         if anonymize:
-            emails = await text_processor.anonymize(emails)
-        phishbowl.add_emails(emails)
+            emails = text_processor.anonymize(emails)
+        await phishbowl.add_emails(emails)
 
     return response[0]
 

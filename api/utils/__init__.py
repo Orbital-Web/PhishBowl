@@ -1,1 +1,2 @@
 from .evaluate_phishnet import evaluate_phishnet
+from .populate_phishbowl import populate_phishbowl
