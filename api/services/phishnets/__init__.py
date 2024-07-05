@@ -1,3 +1,2 @@
 from .FineTunedLLMPhishNet import FineTunedLLMPhishNet
-from .PromptBasedLLMPhishNet import PromptBasedLLMPhishNet
 from .EnsemblePhishNet import EnsemblePhishNet

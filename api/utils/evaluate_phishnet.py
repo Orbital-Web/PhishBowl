@@ -25,7 +25,7 @@ def load_net(name: str) -> PhishNet:
 def evaluate_phishnet(net_name: str, train: bool, reset: bool, batchsize: int):
     logger.info("Loading phishnet...")
     phishnet = load_net(net_name)
-    datasetdict = load_emails()
+    traindata = load_emails()
 
     # reset net
     if reset:
@@ -35,13 +35,13 @@ def evaluate_phishnet(net_name: str, train: bool, reset: bool, batchsize: int):
     # train net
     if train:
         logger.info("Training...")
-        phishnet.train(datasetdict)
+        phishnet.train(traindata)
 
     # evaluate net
     logger.info("Evaluating...")
     y_true = []
     y_pred = []
-    for emails in datasetdict["test"].iter(batchsize):
+    for emails in traindata.datasetdict["test"].iter(batchsize):
         y_true.extend(emails["label"])
         predictions = asyncio.run(phishnet.analyze(emails))
         y_pred.extend(predictions)

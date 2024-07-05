@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import TypedDict
+from .DataStructures import TrainData
 
 
 class Emails(TypedDict):
@@ -27,8 +28,12 @@ class PhishNet(metaclass=ABCMeta):
         """
         pass
 
-    def train(self, *args, **kwargs):
-        """Trains the PhishNet. Some nets may not need pre-training."""
+    def train(self, traindata: TrainData):
+        """Trains the PhishNet. Some nets may not need pre-training.
+
+        Args:
+            traindata (TrainData): Data to train on.
+        """
         pass
 
     def reset(self):

@@ -15,7 +15,7 @@ def populate_phishbowl(reset: bool):
     """
     logger.info("Loading phishbowl...")
     phishbowl = asyncio.run(load_phishbowl())
-    datasetdict = load_emails(shuffle=False)
+    traindata = load_emails(shuffle=False)
 
     # reset phishbowl
     if reset:
@@ -26,7 +26,7 @@ def populate_phishbowl(reset: bool):
     logger.info("Populating phishbowl...")
     start_index = asyncio.run(phishbowl.count())
 
-    dataset = datasetdict["train"].skip(start_index)
+    dataset = traindata.datasetdict["train"].skip(start_index)
     asyncio.run(phishbowl.add_dataset(dataset))
 
     logger.info("Completed populating the phishbowl")

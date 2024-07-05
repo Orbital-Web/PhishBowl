@@ -1,8 +1,8 @@
+from models import Emails
+from services.textprocessing import EmailTextProcessor
 import chromadb
 from chromadb.utils import embedding_functions
-from models import Emails
 from datasets import IterableDataset
-from services.textprocessing import EmailTextProcessor
 from scipy.special import softmax
 import numpy as np
 import hashlib

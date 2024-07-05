@@ -2,12 +2,8 @@
 api/services/data/**
 !api/services/data/**.py
 
-# api huggingface cache
-api/cache
-
-# phishnet trained models and databases
-api/services/phishnets/**/models
-api/services/phishnets/**/database
+# phishnet trained models
+api/services/phishnets/**/trained
 
 # phishbowl database
 chromadb/db

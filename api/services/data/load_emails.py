@@ -1,11 +1,12 @@
+from models import TrainData
 from datasets import (
     Dataset,
-    IterableDatasetDict,
     load_dataset,
 )
 import pandas as pd
-import logging
+import json
 import os
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +60,36 @@ def preload_emails(savepath: str, test_ratio: float = 0.2, shuffle: bool = True)
     # create dataset
     dataset = Dataset.from_pandas(df, preserve_index=False)
     datasetdict = dataset.train_test_split(test_size=test_ratio, shuffle=shuffle)
+    logger.info(f"Generated dataset\n{datasetdict}")
 
     logger.info("Saving dataset to disc...")
     datasetdict["train"].to_csv(f"{savepath}/train.csv")
     datasetdict["test"].to_csv(f"{savepath}/test.csv")
+    with open(f"{savepath}/metadata.json", "w") as f:
+        train_positives = (
+            datasetdict["train"].filter(lambda ex: ex["label"] >= 0.5).num_rows
+        )
+        test_positives = (
+            datasetdict["test"].filter(lambda ex: ex["label"] >= 0.5).num_rows
+        )
+        metadata = {
+            "features": FEATURES,
+            "train": {
+                "num_rows": datasetdict["train"].num_rows,
+                "positives": train_positives,
+                "negatives": datasetdict["train"].num_rows - train_positives,
+            },
+            "test": {
+                "num_rows": datasetdict["test"].num_rows,
+                "positives": test_positives,
+                "negatives": datasetdict["test"].num_rows - test_positives,
+            },
+        }
+        json.dump(metadata, f, indent=4)
 
 
-def load_emails(test_ratio: float = 0.2, shuffle: bool = True) -> IterableDatasetDict:
-    """Lazily loads all the emails as an iterable datasetdict.
+def load_emails(test_ratio: float = 0.2, shuffle: bool = True) -> TrainData:
+    """Lazily loads all the emails as an iterable datasetdict and associated metadata.
 
     Args:
         test_ratio (float, optional): Ratio of dataset to use as the test split.
@@ -75,7 +98,7 @@ def load_emails(test_ratio: float = 0.2, shuffle: bool = True) -> IterableDatase
             Note that it only shuffles emails in the buffer. Defaults to True.
 
     Returns:
-        IterableDatasetDict: The loaded datasetdict.
+        TrainData: The loaded datasetdict and metadata.
     """
     LOADPATH = "/app/services/data/"
     TRAINFILE = f"{LOADPATH}train.csv"
@@ -94,4 +117,7 @@ def load_emails(test_ratio: float = 0.2, shuffle: bool = True) -> IterableDatase
     )
     if shuffle:
         datasetdict = datasetdict.shuffle(buffer_size=1024)
-    return datasetdict
+    with open(f"{LOADPATH}/metadata.json", "r") as f:
+        metadata = json.load(f)
+
+    return TrainData(datasetdict, metadata)
