@@ -41,7 +41,7 @@ class FineTunedLLMPhishNet(PhishNet):
 
     def load_model(self):
         """Loads the model, tokenizer, and the classification pipeline."""
-        # temporary FIXME to avoid increasing image size, will mess up train
+        # temporary FIXME to avoid increasing image size, will mess up training
         self.classifier = TextClassificationPipeline(
             model="ealvaradob/bert-finetuned-phishing"
         )
