@@ -11,6 +11,7 @@ class Emails(TypedDict):
     subject: list[str]
     body: list[str]
     label: list[float]  # 1 for phishing, 0 for benign
+    unsafe: list[bool]  # True if the email contains a caution or content blocked flag
 
 
 class PhishNet(metaclass=ABCMeta):

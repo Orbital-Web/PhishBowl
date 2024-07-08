@@ -23,7 +23,7 @@ class PhishBowl:
         self.batchsize = 2048  # batchsize of emails to ingest at once
         # analysis
         self.comparison_size = 12  # number of emails to use as reference when analyzing
-        self.confidence_decay = 0.5  # positive value specifying how fast the confidence decays with distance
+        self.confidence_decay = 0.8  # positive value specifying how fast the confidence decays with distance
 
     async def initialize_db(self):
         """Initializes the client and collection used to store documents."""
@@ -152,7 +152,7 @@ class PhishBowl:
         # calculate phish score for each email
         phish_scores = []
         for distances, metadatas in zip(matches["distances"], matches["metadatas"]):
-            confidence = np.exp(-self.confidence_decay * distances[0])
+            confidence = np.exp(-self.confidence_decay * distances[0] * distances[0])
             weights = softmax(-1 * np.array(distances))
             scores = [metadata["label"] for metadata in metadatas]
 

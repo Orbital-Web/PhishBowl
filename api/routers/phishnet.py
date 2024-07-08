@@ -27,20 +27,29 @@ async def analyze_image(
     Returns:
         AnalysisResponse: Response containing the analysis result.
     """
+    phishnet: PhishNet = request.app.phishnet
+    phishbowl: PhishBowl = request.app.phishbowl
     image_processor: EmailImageProcessor = request.app.image_processor
+    text_processor: EmailTextProcessor = request.app.text_processor
 
     # ensure input is an image file
     if file.content_type not in ["image/jpeg", "image/png", "image/tiff"]:
-        raise HTTPException(status_code=400, detail="Invalid image file type")
+        raise HTTPException(status_code=415, detail="Invalid image file type")
 
-    # convert image to email text
+    # convert image and analyze
     contents = await file.read()
     image = cv2.imdecode(np.frombuffer(contents, np.uint8), cv2.IMREAD_GRAYSCALE)
-    email_text = image_processor.process(image)
+    emails = image_processor.process(image)
+    response = await analyze_emails_batch(phishnet, emails)
 
-    # analyze
-    response = await analyze_text(request, email_text, anonymize)
-    return response
+    # add to phishbowl if TODO:
+    if False:
+        # anonymize if requested
+        if anonymize:
+            emails = text_processor.anonymize(emails)
+        await phishbowl.add_emails(emails)
+
+    return response[0]
 
 
 @router.post("/text")

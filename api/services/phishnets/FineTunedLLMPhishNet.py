@@ -11,6 +11,7 @@ from transformers import (
 )
 import evaluate
 import numpy as np
+import torch
 import os
 import logging
 
@@ -25,6 +26,7 @@ class FineTunedLLMPhishNet(PhishNet):
     def __init__(self):
         login(token=os.environ.get("HUGGINGFACE_TOKEN_WRITE"))
         self.modelpath = "/app/services/phishnets/trained/bert-finetuned-phishing"
+        self.batch_size = 1  # NOTE: device-specific, make sure to try different values
         self.email_processor = EmailTextProcessor()
         self.classifier: TextClassificationPipeline = None
         self.model: BertForSequenceClassification = None
@@ -41,11 +43,6 @@ class FineTunedLLMPhishNet(PhishNet):
 
     def load_model(self):
         """Loads the model, tokenizer, and the classification pipeline."""
-        # temporary FIXME to avoid increasing image size, will mess up train
-        self.classifier = TextClassificationPipeline(
-            model="ealvaradob/bert-finetuned-phishing"
-        )
-        return
         # first time training, load pre-trained model
         if not os.path.exists(self.modelpath):
             self.reset()
@@ -56,8 +53,22 @@ class FineTunedLLMPhishNet(PhishNet):
             self.model = BertForSequenceClassification.from_pretrained(self.modelpath)
             self.tokenizer = BertTokenizer.from_pretrained(self.modelpath)
 
+        # get device
+        is_cuda = torch.cuda.is_available()
+        device = torch.device("cuda:0" if is_cuda else "cpu")
+        self.model.to(device)
+
+        # load pipeline
+        logger.info(
+            "Creating TextClassificationPipeline with:\n"
+            + f"  device: {torch.cuda.get_device_name(device.index) if is_cuda else 'CPU'}\n"
+            + f"  batch size: {self.batch_size}"
+        )
         self.classifier = TextClassificationPipeline(
-            model=self.model, tokenizer=self.tokenizer
+            model=self.model,
+            tokenizer=self.tokenizer,
+            batch_size=self.batch_size,
+            device=device.index if is_cuda else -1,
         )
 
     async def analyze(self, emails: Emails) -> list[float]:
