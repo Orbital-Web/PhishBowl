@@ -19,4 +19,6 @@ COPY . .
 
 ENV PYTHONPATH=/app
 
+EXPOSE 8000
+
 CMD ["python", "main.py", "run"]

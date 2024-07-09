@@ -11,7 +11,7 @@ services:
   #   volumes:
   #     - ./app:/app
   #   ports:
-  #     - "8000:8000"
+  #     - "8080:80"
 
   api:
     image: phishbowl/api:latest
