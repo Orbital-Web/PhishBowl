@@ -2,8 +2,9 @@
 api/services/data/**
 !api/services/data/**.py
 
-# phishnet trained models
+# phishnet trained models and databases
 api/services/phishnets/**/trained
+api/services/phishnets/**/data
 
 # phishbowl database
 chromadb/db

@@ -1,3 +1,4 @@
 from .FineTunedLLMPhishNet import FineTunedLLMPhishNet
-from .EnsemblePhishNet import EnsemblePhishNet
 from .HFLLMPhishNet import HFLLMPhishNet
+from .SenderPhishNet import SenderPhishNet
+from .EnsemblePhishNet import EnsemblePhishNet
