@@ -3,15 +3,17 @@ networks:
     driver: bridge
 
 services:
-  # app:
-  #   image: phishbowl/app:latest
-  #   build:
-  #     context: ./app
-  #   env_file: ./app/.env
-  #   volumes:
-  #     - ./app:/app
-  #   ports:
-  #     - "8080:80"
+  app:
+    image: phishbowl/app:latest
+    build:
+      context: ./app
+    env_file: ./app/.env
+    volumes:
+      - ./app:/app
+    ports:
+      - "8080:80"
+    networks:
+      - net
 
   api:
     image: phishbowl/api:latest

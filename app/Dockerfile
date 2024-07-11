@@ -1,12 +1,21 @@
-FROM python:3.11-slim
+# Stage 1: Build React application
+FROM node:alpine as build
 
 WORKDIR /app
+COPY ./package.json yarn.lock ./
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN yarn install
 
-COPY . .
+COPY . .    
 
-ENV PYTHONPATH=/app
+RUN yarn build
 
-CMD ["python", "main.py"]
+# Stage 2: Serve React build with Nginx
+FROM nginx:alpine
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
