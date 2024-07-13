@@ -1,8 +1,8 @@
-from models import Emails, PhishNet, TrainData
-import dns.resolver
-import re
 import logging
+import re
 
+import dns.resolver
+from models import Emails, PhishNet, TrainData
 
 logger = logging.getLogger(__name__)
 

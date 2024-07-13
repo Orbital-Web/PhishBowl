@@ -1,12 +1,14 @@
-from models import Emails
-from services.textprocessing import EmailTextProcessor
-import chromadb
-from chromadb.utils import embedding_functions
-from datasets import IterableDataset
-from scipy.special import softmax
-import numpy as np
 import hashlib
 import logging
+
+import numpy as np
+from chromadb.utils import embedding_functions
+from datasets import IterableDataset
+from models import Emails
+from scipy.special import softmax
+from services.textprocessing import EmailTextProcessor
+
+import chromadb
 
 logger = logging.getLogger(__name__)
 

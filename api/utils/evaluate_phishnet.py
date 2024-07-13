@@ -1,11 +1,12 @@
-from models import PhishNet
-from services.data import load_emails
+import asyncio
 import importlib
-from sklearn.metrics import confusion_matrix, roc_auc_score
+import logging
+
 import numpy as np
 import pandas as pd
-import asyncio
-import logging
+from models import PhishNet
+from services.data import load_emails
+from sklearn.metrics import confusion_matrix, roc_auc_score
 
 logger = logging.getLogger(__name__)
 

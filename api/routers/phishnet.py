@@ -1,12 +1,11 @@
-from fastapi import APIRouter, Request, UploadFile, HTTPException
-from schemas import Email, AnalysisResponse
-from models import Emails, PhishNet
-from services.phishbowl import PhishBowl
-from services.imageprocessing import EmailImageProcessor
-from services.textprocessing import EmailTextProcessor
-import numpy as np
 import cv2
-
+import numpy as np
+from fastapi import APIRouter, HTTPException, Request, UploadFile
+from models import Emails, PhishNet
+from schemas import AnalysisResponse, Email
+from services.imageprocessing import EmailImageProcessor
+from services.phishbowl import PhishBowl
+from services.textprocessing import EmailTextProcessor
 
 router = APIRouter()
 

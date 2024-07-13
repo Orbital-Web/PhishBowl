@@ -1,20 +1,20 @@
-from models import Emails, PhishNet, TrainData
-from services.textprocessing import EmailTextProcessor
-from huggingface_hub import login
-from transformers import (
-    BertForSequenceClassification,
-    BertTokenizer,
-    TextClassificationPipeline,
-    DataCollatorWithPadding,
-    TrainingArguments,
-    Trainer,
-)
+import logging
+import os
+
 import evaluate
 import numpy as np
 import torch
-import os
-import logging
-
+from huggingface_hub import login
+from models import Emails, PhishNet, TrainData
+from services.textprocessing import EmailTextProcessor
+from transformers import (
+    BertForSequenceClassification,
+    BertTokenizer,
+    DataCollatorWithPadding,
+    TextClassificationPipeline,
+    Trainer,
+    TrainingArguments,
+)
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,8 @@
-from services.phishbowl import load_phishbowl
-from services.data import load_emails
 import asyncio
 import logging
+
+from services.data import load_emails
+from services.phishbowl import load_phishbowl
 
 logger = logging.getLogger(__name__)
 

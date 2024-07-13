@@ -1,10 +1,10 @@
-from models import Emails
-import pytesseract
-import numpy as np
-from pandas import DataFrame
-from numpy.typing import NDArray
 import logging
 
+import numpy as np
+import pytesseract
+from models import Emails
+from numpy.typing import NDArray
+from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 

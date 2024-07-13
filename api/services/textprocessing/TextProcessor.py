@@ -31,6 +31,10 @@ class EmailTextProcessor:
         """
         documents = []
         for subject, body in zip(emails["subject"], emails["body"]):
+            if not subject:
+                documents.append(body)
+                continue
+
             # only add subject too if it'll likely fit in the token limit
             n_tokens = (len(body) + len(subject)) * self.tokens_per_chr
             documents.append(

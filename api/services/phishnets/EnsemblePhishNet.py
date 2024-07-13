@@ -1,7 +1,8 @@
-from models import Emails, PhishNet, TrainData
-from services.phishbowl import PhishBowl, load_phishbowl
 import asyncio
 import logging
+
+from models import Emails, PhishNet, TrainData
+from services.phishbowl import PhishBowl, load_phishbowl
 
 logger = logging.getLogger(__name__)
 

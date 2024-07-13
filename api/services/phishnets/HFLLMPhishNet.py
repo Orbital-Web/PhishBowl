@@ -1,11 +1,11 @@
+import asyncio
+import logging
+import os
+
+from huggingface_hub import AsyncInferenceClient, login
 from models import Emails, PhishNet, TrainData
 from services.textprocessing import EmailTextProcessor
-from huggingface_hub import login, AsyncInferenceClient
 from transformers import BertTokenizer
-import asyncio
-import os
-import logging
-
 
 logger = logging.getLogger(__name__)
 

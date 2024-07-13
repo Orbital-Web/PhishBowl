@@ -1,9 +1,10 @@
-from utils import evaluate_phishnet, populate_phishbowl
-from dotenv import load_dotenv
-from argparse import ArgumentParser
-import uvicorn
 import logging
 import os
+from argparse import ArgumentParser
+
+import uvicorn
+from dotenv import load_dotenv
+from utils import evaluate_phishnet, populate_phishbowl
 
 
 def cli_parser() -> ArgumentParser:
