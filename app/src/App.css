@@ -1,39 +1,34 @@
-.App {
-    text-align: center;
+:root {
+    --color-primary: #AE81DB;
+    --color-secondary: #EC2765;
+    --color-tertiary: #FFD70E;
+    --color-text: #F8F8F2;
+    --color-subtext: #ADA6A0;
+    --color-bg: #272822;
+    --color-subbg: #1E1F1C;
 }
 
-.App-header {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: "eurostile";
 }
 
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
+h1 {font-size: clamp(1.92rem, 3.6vw, 3rem);}
+h2 {font-size: clamp(1.44rem, 2.7vw, 2.25rem);}
+h3 {font-size: clamp(0.96rem, 1.8vw, 1.5rem);}
+p {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
+
+@media (max-aspect-ratio: 5/4) {
+    h1 {font-size: clamp(1.92rem, 7.2vw, 3rem);}    /* mobile */
+    h2 {font-size: clamp(1.44rem, 5.4vw, 2.25rem);}
+    h3 {font-size: clamp(0.96rem, 3.6vw, 1.5rem);}
+    p {font-size: clamp(0.8rem, 3vw, 1.25rem);}
 }
 
-.buttons button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.form {
-    margin-top: 20px;
-}
-
-form div {
-    margin-bottom: 10px;
-}
-
-form label {
-    margin-right: 10px;
-}
+.text-primary {color: var(--color-primary);}
+.text-secondary {color: var(--color-secondary);}
+.text-tertiary {color: var(--color-tertiary);}
+.text {color: var(--color-text);}
+.subtext {color: var(--color-subtext);}

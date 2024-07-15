@@ -1,0 +1,42 @@
+.analyze {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5vh;
+    height: 100vh;
+}
+
+.analyze .header {
+    width: 45vw;
+    text-align: center;
+}
+
+.analyze .header h1 {
+    margin: 0;
+    color: var(--color-primary);
+}
+
+.analyze .options {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 5vw;
+}
+
+.analyze .options button {
+    flex: 1;
+    cursor: pointer;
+    border: none;
+    border-radius: 1rem;
+    background-color: var(--color-subbg);
+    width: 30vw;
+    height: 30vh;
+    color: var(--color-subtext);
+}
+
+.analyze .options button:hover {
+    scale: 1.05;
+    transition: scale ease-in 0.05s;
+}
