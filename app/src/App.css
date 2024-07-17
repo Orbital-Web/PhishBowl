@@ -15,16 +15,15 @@ body {
     font-family: "eurostile";
 }
 
-h1 {font-size: clamp(1.92rem, 3.6vw, 3rem);}
-h2 {font-size: clamp(1.44rem, 2.7vw, 2.25rem);}
-h3 {font-size: clamp(0.96rem, 1.8vw, 1.5rem);}
-p {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
-
+h1, .text-size1 {font-size: clamp(1.92rem, 3.6vw, 3rem);}
+h2, .text-size2 {font-size: clamp(1.44rem, 2.7vw, 2.25rem);}
+h3, .text-size3 {font-size: clamp(0.96rem, 1.8vw, 1.5rem);}
+p, input, .text-size4 {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
 @media (max-aspect-ratio: 5/4) {
-    h1 {font-size: clamp(1.92rem, 7.2vw, 3rem);}    /* mobile */
-    h2 {font-size: clamp(1.44rem, 5.4vw, 2.25rem);}
-    h3 {font-size: clamp(0.96rem, 3.6vw, 1.5rem);}
-    p {font-size: clamp(0.8rem, 3vw, 1.25rem);}
+    h1, .text-size1 {font-size: clamp(1.92rem, 7.2vw, 3rem);}    /* mobile */
+    h2, .text-size2 {font-size: clamp(1.44rem, 5.4vw, 2.25rem);}
+    h3, .text-size3 {font-size: clamp(0.96rem, 3.6vw, 1.5rem);}
+    p, input, .text-size4 {font-size: clamp(0.8rem, 3vw, 1.25rem);}
 }
 
 .text-primary {color: var(--color-primary);}

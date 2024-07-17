@@ -5,9 +5,9 @@ import "./Home.css";
 
 function Home() {
   return (
-    <div className="analyze">
+    <div className="home">
       <div className="header">
-        <h1>Analyze with PhishNet</h1>
+        <h1 className="text-primary">Analyze with PhishNet</h1>
         <p className="subtext">
           PhishNet may anonymize and add your email to the PhishBowl to prevent
           similar phishing scams in the future. You may disable this in your
@@ -21,7 +21,7 @@ function Home() {
             <h2>
               <FontAwesomeIcon icon="fa-image" />
             </h2>
-            <p>Email Screenshot</p>
+            <p>Analyze Screenshot</p>
           </button>
         </Link>
 
@@ -30,7 +30,7 @@ function Home() {
             <h2>
               <FontAwesomeIcon icon="fa-t" />
             </h2>
-            <p>Email Text</p>
+            <p>Analyze Text</p>
           </button>
         </Link>
       </div>

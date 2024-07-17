@@ -1,0 +1,90 @@
+.analyze {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.analyze form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin: none;
+    border-radius: 2rem;
+    background-color: var(--color-subbg);
+    padding: 2rem;
+    width: 50vw;
+    color: var(--color-subtext);
+}
+@media (max-aspect-ratio: 5/4) {
+    .analyze form {
+        width: 80vw;
+    }
+}
+
+.analyze form nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center ;
+    width: 100%;
+    text-decoration: none;
+}
+
+.analyze form nav a {
+    color: var(--color-subtext);
+    text-decoration: none;
+}
+.analyze form nav a:hover {
+    scale: 1.1;
+    transition: all ease-in 0.1s;
+    color: white;
+}
+
+.analyze form .field {
+    width: 90%;
+}
+
+.analyze form :is(p, h3) {
+    margin: 0;
+}
+
+.analyze form :is(input, .quill) {
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+    border: 1px solid var(--color-subtext);
+    background-color: var(--color-subbg);
+    width: 100%;
+    color: var(--color-subtext);
+}
+
+.analyze form input {
+    padding: 1rem;
+}
+
+.analyze form .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--color-subtext);
+}
+
+.analyze form .ql-container {
+    border: none;
+    height: 30vh;
+}
+
+.analyze form .ql-toolbar :is(span, .ql-stroke, .ql-fill, .ql-picker) {
+    stroke: var(--color-subtext);
+    color: var(--color-subtext);
+}
+
+.analyze form button {
+    border: none;
+    border-radius: 0.6rem;
+    background-color: var(--color-primary);
+    width: 90%;
+    height: 7vh;
+}
