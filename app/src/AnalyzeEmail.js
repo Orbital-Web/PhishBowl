@@ -53,7 +53,7 @@ function AnalyzeEmailForm() {
 
   return (
     <div className="analyze">
-      <form autocomplete="off" onSubmit={onSubmit} className="text-size4">
+      <form onSubmit={onSubmit} className="text-size4">
         <nav>
           <Link to="/">
             <FontAwesomeIcon icon="fa-solid fa-xmark" />
@@ -70,6 +70,7 @@ function AnalyzeEmailForm() {
             value={subject}
             onChange={onSubjectChange}
             placeholder="Subject"
+            autoComplete="off"
           />
         </div>
 
@@ -80,6 +81,7 @@ function AnalyzeEmailForm() {
             value={sender}
             onChange={onSenderChange}
             placeholder="Sender <sender@email.com>"
+            autoComplete="off"
           />
         </div>
 

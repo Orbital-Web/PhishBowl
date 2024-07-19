@@ -1,10 +1,10 @@
 # Stage 1: Build React application
-FROM node:alpine as build
+FROM node:20-alpine as build
 
 WORKDIR /app
 COPY ./package.json yarn.lock ./
 
-RUN yarn install --verbose
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
