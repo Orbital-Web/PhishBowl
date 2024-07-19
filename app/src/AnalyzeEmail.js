@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,13 +11,14 @@ function AnalyzeEmailForm() {
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
   const quillRef = useRef(null);
+  const navigate = useNavigate();
 
-  // onchange function
+  // onchange functions
   const onSubjectChange = (e) => setSubject(e.target.value);
   const onSenderChange = (e) => setSender(e.target.value);
   const onBodyChange = (value) => setBody(value);
 
-  // Email body available toolbar options
+  // email body toolbar options
   const toolbarOptions = [
     [{ size: ["small", false, "large", "huge"] }],
     ["bold", "italic", "underline"],
@@ -27,7 +28,7 @@ function AnalyzeEmailForm() {
     ["clean"],
   ];
 
-  // Submit override
+  // submit override
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -36,18 +37,18 @@ function AnalyzeEmailForm() {
       setError("Body is required.");
       return;
     }
-    setError("");
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(body, "text/html");
-    const htmlBody = doc.body.innerHTML;
-
-    console.log({
+    const state = {
+      type: "email",
       subject,
       sender,
       body: plaintextBody,
-      html: htmlBody,
-    });
+      html: doc.body.innerHTML,
+    };
+
+    navigate("/result", { state });
   };
 
   return (

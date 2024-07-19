@@ -5,6 +5,7 @@ import "./App.css";
 import Home from "./Home";
 import AnalyzeEmailForm from "./AnalyzeEmail";
 import AnalyzeImageForm from "./AnalyzeImage";
+import ResultsPage from "./AnalysisResult";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/email" element={<AnalyzeEmailForm />} />
           <Route path="/image" element={<AnalyzeImageForm />} />
+          <Route path="/result" element={<ResultsPage />} />
         </Routes>
       </section>
 
