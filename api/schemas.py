@@ -3,6 +3,10 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+class HealthCheck(BaseModel):
+    status: str = "OK"
+
+
 class Email(BaseModel):
     sender: str
     subject: str

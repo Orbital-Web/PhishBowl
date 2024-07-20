@@ -18,8 +18,9 @@ function ResultsPage() {
       setProgress("Analyzing email...");
       console.log("A");
 
+      let response;
       if (state.type === "email") {
-        var response = await fetch("/api/analyze/email", {
+        response = await fetch("/api/analyze/email", {
           method: "POST",
           redirect: "follow",
           headers: { "Content-Type": "application/json" },
@@ -30,7 +31,7 @@ function ResultsPage() {
           }),
         });
       } else {
-        var response = await fetch("/api/analyze/image", {
+        response = await fetch("/api/analyze/image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

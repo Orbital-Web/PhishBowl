@@ -7,15 +7,17 @@ services:
     image: phishbowl/app:latest
     build:
       context: ./app
+      dockerfile: Dockerfile.dev
     env_file: ./app/.env
+    environment:
+      - WDS_SOCKET_HOST=127.0.0.1
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     volumes:
       - ./app:/app
       - /app/node_modules
-    depends_on:
-      api:
-        condition: service_started
     ports:
-      - "80:80"
+      - "3000:3000"
     networks:
       - net
 
@@ -48,6 +50,21 @@ services:
       - ANONYMIZED_TELEMETRY=TRUE
     ports:
       - "5000:5000"
+    networks:
+      - net
+
+  nginx-dev:
+    image: phishbowl/nginx:latest
+    build:
+      context: ./nginx-dev
+      dockerfile: Dockerfile.dev
+    depends_on:
+      app:
+        condition: service_started
+      api:
+        condition: service_started
+    ports:
+      - "80:80"
     networks:
       - net
 
