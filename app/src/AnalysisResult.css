@@ -1,0 +1,33 @@
+.results {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.results .results-summary {
+    margin: 20vh 0;
+    text-align: center;
+}
+
+.results .results-summary .result-gauge {
+    margin-top: -4rem;
+    width: 36rem;
+    height: 18rem;
+}
+
+.results .result-details {
+    width: 80vw;
+}
+
+
+/* .apexcharts-datalabel-label {
+    fill: violet !important;
+}
+
+.apexcharts-datalabel-value {
+    font-size: 3rem;
+} */
+
+

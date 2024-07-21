@@ -53,7 +53,7 @@
     margin: 0;
 }
 
-.analyze form :is(input, .quill) {
+.analyze form :is(input[type="text"], .quill) {
     box-sizing: border-box;
     margin-top: 0.5rem;
     border: 1px solid var(--color-subtext);
@@ -62,7 +62,7 @@
     color: var(--color-subtext);
 }
 
-.analyze form input {
+.analyze form input[type="text"] {
     padding: 1rem;
 }
 

@@ -47,7 +47,6 @@ function AnalyzeEmailForm() {
       body: plaintextBody,
       html: doc.body.innerHTML,
     };
-
     navigate("/result", { state });
   };
 
