@@ -4,6 +4,7 @@
     justify-content: flex-start;
     align-items: center;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .results .results-summary {
@@ -21,13 +22,14 @@
     width: 80vw;
 }
 
-
-/* .apexcharts-datalabel-label {
-    fill: violet !important;
+.results .result-details article {
+    display: flex;
+    flex-direction: row;
+    width: 80vw;
 }
 
-.apexcharts-datalabel-value {
-    font-size: 3rem;
-} */
-
+.results .result-details article .detail-gauge {
+    border: 1px solid white;
+    width: 18rem;
+}
 

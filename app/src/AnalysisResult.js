@@ -25,12 +25,14 @@ function AnalysisGauge({ label, confidence }) {
 
   const options = {
     chart: {
-      height: 100,
       type: "radialBar",
       fontFamily: "eurostile",
       animations: {
         enabled: true,
         speed: animTime,
+      },
+      sparkline: {
+        enabled: true,
       },
     },
 
@@ -78,6 +80,61 @@ function AnalysisGauge({ label, confidence }) {
   );
 }
 
+function SubGauge({ label, value, color }) {
+  const valuecolor = "#ADA6A0";
+
+  const options = {
+    chart: {
+      type: "radialBar",
+      fontFamily: "eurostile",
+      sparkline: {
+        enabled: true,
+      },
+    },
+
+    plotOptions: {
+      radialBar: {
+        startAngle: 0,
+        endAngle: 360,
+        hollow: {
+          size: "40%",
+        },
+        track: {
+          background: "#1E1F1C",
+          dropShadow: {
+            enabled: true,
+            opacity: 0.15,
+          },
+        },
+        dataLabels: {
+          name: {
+            fontSize: "1.5rem",
+          },
+          value: {
+            formatter: function (val) {
+              return Number.parseFloat(val).toFixed(2) + "%";
+            },
+            color: valuecolor,
+            fontSize: "1rem",
+          },
+        },
+      },
+    },
+    series: [value * 100],
+    labels: [label],
+    colors: [color],
+  };
+
+  return (
+    <Chart
+      options={options}
+      series={options.series}
+      type={options.chart.type}
+      width="110%"
+    />
+  );
+}
+
 function ResultsPage() {
   const location = useLocation();
   const state = location.state;
@@ -92,34 +149,34 @@ function ResultsPage() {
 
       setProgress("Analyzing email...");
 
-      let response;
-      if (state.type === "email") {
-        const data = {
-          sender: state.sender,
-          subject: state.subject,
-          body: state.body,
-        };
-        response = await fetch("/api/analyze/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-      } else {
-        const data = new FormData();
-        data.append("file", state.file);
-        response = await fetch("/api/analyze/image", {
-          method: "POST",
-          body: data,
-        });
-      }
-      const result = await response.json();
+      // let response;
+      // if (state.type === "email") {
+      //   const data = {
+      //     sender: state.sender,
+      //     subject: state.subject,
+      //     body: state.body,
+      //   };
+      //   response = await fetch("/api/analyze/email", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify(data),
+      //   });
+      // } else {
+      //   const data = new FormData();
+      //   data.append("file", state.file);
+      //   response = await fetch("/api/analyze/image", {
+      //     method: "POST",
+      //     body: data,
+      //   });
+      // }
+      // const result = await response.json();
 
       // FIXME: mock result
-      // const result = {
-      //   label: Math.random() >= 0.5 ? "PHISHING" : "LEGITIMATE",
-      //   confidence: Math.random(),
-      //   details: { ai: 0.73, similarity: 0.85, impersonation: 0.9, link: 0.8 },
-      // };
+      const result = {
+        label: Math.random() >= 0.5 ? "PHISHING" : "LEGITIMATE",
+        confidence: Math.random(),
+        details: { ai: 0.73, similarity: 0.85, impersonation: 0.9, link: 0.8 },
+      };
 
       setResult(result);
     };
@@ -148,12 +205,22 @@ function ResultsPage() {
           </div>
         </div>
       )}
-      {result && (
+
+      {/* {result && (
         <details className="result-details">
           <summary>Details</summary>
-          <article>AAA</article>
+          <article>
+            <div className="detail-gauge">
+              <SubGauge
+                label="Similarity"
+                value={result.details.similarity}
+                color="#ff0000"
+              />
+              <p>A</p>
+            </div>
+          </article>
         </details>
-      )}
+      )} */}
     </div>
   );
 }
