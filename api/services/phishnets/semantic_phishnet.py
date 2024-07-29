@@ -7,9 +7,8 @@ from services.phishbowl import PhishBowl, load_phishbowl
 logger = logging.getLogger(__name__)
 
 
-class EnsemblePhishNet(PhishNet):
-    """PhishNet which combines the PhishBowl and FineTunedLLMPhishNet to detect phishing
-    emails."""
+class SemanticPhishNet(PhishNet):
+    """PhishNet which uses the PhishBowl to semantically detect phishing emails."""
 
     def __init__(self, phishbowl: PhishBowl = None):
         self.phishbowl = phishbowl
@@ -21,7 +20,9 @@ class EnsemblePhishNet(PhishNet):
         return await self.phishbowl.analyze_emails(emails)
 
     def train(self, traindata: TrainData):
-        asyncio.run(self.phishbowl.add_dataset(traindata.datasetdict["train"]))
+        # asyncio.run(self.phishbowl.add_dataset(traindata.datasetdict["train"]))
+        logger.warning("Training is not supported on the PhishBowlPhishNet")
 
     def reset(self):
-        asyncio.run(self.phishbowl.clear())
+        # asyncio.run(self.phishbowl.clear())
+        pass

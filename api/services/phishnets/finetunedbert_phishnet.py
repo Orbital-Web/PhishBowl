@@ -19,8 +19,8 @@ from transformers import (
 logger = logging.getLogger(__name__)
 
 
-class FineTunedLLMPhishNet(PhishNet):
-    """PhishNet which uses a fine-tuned LLM trained on a phishing email dataset to
+class FineTunedBERTPhishNet(PhishNet):
+    """PhishNet which uses a fine-tuned BERT trained on a phishing email dataset to
     detect phishing emails."""
 
     def __init__(self):

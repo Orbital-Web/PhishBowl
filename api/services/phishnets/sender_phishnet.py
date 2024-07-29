@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class SenderPhishNet(PhishNet):
     """PhishNet which uses heuristics based apporach on the sender address to detect
-    phishing."""
+    phishing emails."""
 
     def __init__(self):
         self.mailname_re = re.compile(
@@ -35,7 +35,7 @@ class SenderPhishNet(PhishNet):
         return scores
 
     def train(self, traindata: TrainData):
-        raise ValueError("Training is not supported on the SenderPhishNet")
+        logger.warning("Training is not supported on the SenderPhishNet")
 
     async def split_senders(self, emails: Emails) -> list[tuple[str, str]]:
         """Splits the sender into email name and email domain.

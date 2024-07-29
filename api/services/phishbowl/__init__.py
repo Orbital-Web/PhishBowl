@@ -1,1 +1,1 @@
-from .PhishBowl import PhishBowl, load_phishbowl
+from .phishbowl import PhishBowl, load_phishbowl

@@ -15,7 +15,7 @@ services:
       - WATCHPACK_POLLING=true
     volumes:
       - ./app:/app
-      - /app/node_modules
+      - node-modules:/app/node_modules
     ports:
       - "3000:3000"
     networks:
@@ -70,4 +70,6 @@ services:
 
 volumes:
   chroma-data:
+    driver: local
+  node-modules:
     driver: local

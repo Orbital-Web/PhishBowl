@@ -10,8 +10,8 @@ from transformers import BertTokenizer
 logger = logging.getLogger(__name__)
 
 
-class HFLLMPhishNet(PhishNet):
-    """PhishNet which uses a fine-tuned LLM provided by the huggingfaces inference API
+class HFBERTPhishNet(PhishNet):
+    """PhishNet which uses a fine-tuned BERT provided by the huggingfaces inference API
     to detect phishing emails. Note this method easily reaches the request limit when
     using a free API token."""
 
@@ -42,4 +42,4 @@ class HFLLMPhishNet(PhishNet):
         ]
 
     def train(self, traindata: TrainData):
-        raise ValueError("Training is not supported on the HFLLMPhishNet")
+        logger.warning("Training is not supported on the HFLLMPhishNet")

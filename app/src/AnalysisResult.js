@@ -149,34 +149,34 @@ function ResultsPage() {
 
       setProgress("Analyzing email...");
 
-      // let response;
-      // if (state.type === "email") {
-      //   const data = {
-      //     sender: state.sender,
-      //     subject: state.subject,
-      //     body: state.body,
-      //   };
-      //   response = await fetch("/api/analyze/email", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(data),
-      //   });
-      // } else {
-      //   const data = new FormData();
-      //   data.append("file", state.file);
-      //   response = await fetch("/api/analyze/image", {
-      //     method: "POST",
-      //     body: data,
-      //   });
-      // }
-      // const result = await response.json();
+      let response;
+      if (state.type === "email") {
+        const data = {
+          sender: state.sender,
+          subject: state.subject,
+          body: state.body,
+        };
+        response = await fetch("/api/analyze/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      } else {
+        const data = new FormData();
+        data.append("file", state.file);
+        response = await fetch("/api/analyze/image", {
+          method: "POST",
+          body: data,
+        });
+      }
+      const result = await response.json();
 
       // FIXME: mock result
-      const result = {
-        label: Math.random() >= 0.5 ? "PHISHING" : "LEGITIMATE",
-        confidence: Math.random(),
-        details: { ai: 0.73, similarity: 0.85, impersonation: 0.9, link: 0.8 },
-      };
+      // const result = {
+      //   label: Math.random() >= 0.5 ? "PHISHING" : "LEGITIMATE",
+      //   confidence: Math.random(),
+      //   details: { ai: 0.73, similarity: 0.85, impersonation: 0.9, link: 0.8 },
+      // };
 
       setResult(result);
     };

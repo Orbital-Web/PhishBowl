@@ -10,7 +10,7 @@ services:
     env_file: ./app/.env
     volumes:
       - ./app:/app
-      - /app/node_modules
+      - node-modules:/app/node_modules
     depends_on:
       api:
         condition: service_started
@@ -53,4 +53,6 @@ services:
 
 volumes:
   chroma-data:
+    driver: local
+  node-modules:
     driver: local
