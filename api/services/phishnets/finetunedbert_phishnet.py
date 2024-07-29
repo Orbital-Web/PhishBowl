@@ -27,7 +27,7 @@ class FineTunedBERTPhishNet(PhishNet):
         login(token=os.environ.get("HUGGINGFACE_TOKEN_WRITE"))
         self.modelpath = "/app/services/phishnets/trained/bert-finetuned-phishing"
         self.batch_size = 1  # NOTE: device-specific, make sure to try different values
-        self.email_processor = EmailTextProcessor()
+        self.email_processor = EmailTextProcessor(target_tokens=512)
         self.classifier: TextClassificationPipeline = None
         self.model: BertForSequenceClassification = None
         self.tokenizer: BertTokenizer = None

@@ -21,7 +21,7 @@ class PhishBowl:
         self.collection_name = "phishbowl"
         self.client = None
         self.collection = None
-        self.email_processor = EmailTextProcessor()
+        self.email_processor = EmailTextProcessor(target_tokens=256)
         self.batchsize = 2048  # batchsize of emails to ingest at once
         # analysis
         self.comparison_size = 12  # number of emails to use as reference when analyzing

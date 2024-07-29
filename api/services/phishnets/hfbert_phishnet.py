@@ -18,7 +18,7 @@ class HFBERTPhishNet(PhishNet):
     def __init__(self):
         login(token=os.environ.get("HUGGINGFACE_TOKEN_READ"))
         self.client = AsyncInferenceClient(model="ealvaradob/bert-finetuned-phishing")
-        self.email_processor = EmailTextProcessor()
+        self.email_processor = EmailTextProcessor(target_tokens=512)
         self.tokenizer: BertTokenizer = BertTokenizer.from_pretrained(
             "ealvaradob/bert-finetuned-phishing"
         )
