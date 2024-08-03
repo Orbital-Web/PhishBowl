@@ -1,14 +1,15 @@
 import hashlib
 import logging
+import os
 
 import numpy as np
-from chromadb.utils import embedding_functions
 from datasets import IterableDataset
 from models import Emails
 from scipy.special import softmax
 from services.textprocessing import EmailTextProcessor
 
-import chromadb
+from .azure_db import AzureDB
+from .hf_db import SentenceTransformerDB
 
 logger = logging.getLogger(__name__)
 
@@ -17,26 +18,17 @@ class PhishBowl:
     """A class for handling the phishing email dataset."""
 
     def __init__(self):
-        # database
-        self.collection_name = "phishbowl"
-        self.client = None
-        self.collection = None
-        self.email_processor = EmailTextProcessor(target_tokens=256)
-        self.batchsize = 2048  # batchsize of emails to ingest at once
-        # analysis
+        self.db = AzureDB()
+        self.text_processor = EmailTextProcessor(
+            max_tokens=8192,
+            truncate_method="end",
+            tokenizer_model="text-embedding-3-small",
+        )
+        self.batchsize = 64  # batchsize of emails to ingest at once
+        self.debug = os.getenv("env", "prod") != "prod"
+        # analysis settings
         self.comparison_size = 12  # number of emails to use as reference when analyzing
         self.confidence_decay = 0.8  # positive value specifying how fast the confidence decays with distance
-
-    async def initialize_db(self):
-        """Initializes the client and collection used to store documents."""
-        self.client = await chromadb.AsyncHttpClient(host="chromadb", port=5000)
-        self.collection = await self.client.get_or_create_collection(
-            name=self.collection_name,
-            embedding_function=embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="avsolatorio/GIST-small-Embedding-v0"
-            ),
-            metadata={"hnsw:space": "l2"},
-        )
 
     def process_emails(self, emails: Emails, anonymize: bool) -> dict[str, list]:
         """Returns the formatted email texts (optionally may be anonymized) and ids.
@@ -50,8 +42,8 @@ class PhishBowl:
             dict[str, list]: The processed email texts.
         """
         if anonymize:
-            emails = self.email_processor.anonymize(emails)
-        documents = self.email_processor.to_text(emails)
+            emails = self.text_processor.anonymize(emails)
+        documents = self.text_processor.to_text(emails)
         ids = [hashlib.sha256(doc.encode("utf-8")).hexdigest() for doc in documents]
         return {"text": documents, "id": ids}
 
@@ -76,9 +68,10 @@ class PhishBowl:
 
         metadatas = [{"label": label} for label in emails["label"]]
 
-        await self.collection.add(documents=documents, metadatas=metadatas, ids=ids)
-        total_count = await self.collection.count()
-        logger.info(f"Ingested {total_count} documents")
+        await self.db.collection.add(documents=documents, metadatas=metadatas, ids=ids)
+        if self.debug:
+            total_count = await self.db.collection.count()
+            logger.info(f"Ingested {total_count} documents")
 
     async def add_dataset(self, dataset: IterableDataset, anonymize: bool = False):
         """Adds emails in the dataset to the phishbowl.
@@ -113,15 +106,14 @@ class PhishBowl:
         """
         # return entire collection count
         if not where:
-            return await self.collection.count()
+            return await self.db.collection.count()
         # return only those that match filter
-        matches = await self.collection.get(include=[], where=where)
+        matches = await self.db.collection.get(include=[], where=where)
         return len(matches["ids"])
 
     async def clear(self):
         """Removes all documents from the phishbowl. Use with care."""
-        await self.client.delete_collection(self.collection_name)
-        await self.initialize_db()
+        await self.db.clear()
 
     async def delete_emails(self, emails: Emails):
         """Removes the emails from the phishbowl.
@@ -129,23 +121,23 @@ class PhishBowl:
         Args:
             emails (Emails): Emails to remove.
         """
-        documents = self.email_processor.to_text(emails)
+        documents = self.text_processor.to_text(emails)
         ids = [hashlib.sha256(doc.encode("utf-8")).hexdigest() for doc in documents]
-        await self.collection.delete(ids=ids)
+        await self.db.collection.delete(ids=ids)
 
     async def analyze_emails(self, emails: Emails) -> list[float]:
         """Compares the emails to the emails in the phishbowl and returns a score
-        between 0 and 1 for each email's liklihood of being a phish.
+        between 0 and 1 for each email's likelihood of being a phish.
 
         Args:
             emails (Emails): Emails to analyze.
 
         Returns:
-            list[float]: Liklihood of each email being a phish.
+            list[float]: Likelihood of each email being a phish.
         """
         # get both phishing and benign emails to ensure both sets are represented
-        documents = self.email_processor.to_text(emails)
-        matches = await self.collection.query(
+        documents = self.text_processor.to_text(emails)
+        matches = await self.db.collection.query(
             query_texts=documents,
             n_results=self.comparison_size,
             include=["metadatas", "distances"],
@@ -167,5 +159,5 @@ class PhishBowl:
 async def load_phishbowl() -> PhishBowl:
     """Creates a fully initialized phishbowl."""
     phishbowl = PhishBowl()
-    await phishbowl.initialize_db()
+    await phishbowl.db.initialize_db()
     return phishbowl

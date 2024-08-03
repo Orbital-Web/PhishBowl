@@ -1,2 +1,3 @@
-from .DataStructures import TrainData
-from .PhishNet import Emails, PhishNet
+from .datastructs import TrainData
+from .phishbowldb import PhishBowlDB
+from .phishnet import Emails, PhishNet

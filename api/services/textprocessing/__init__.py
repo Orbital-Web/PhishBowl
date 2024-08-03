@@ -1,1 +1,1 @@
-from .TextProcessor import EmailTextProcessor
+from .textprocessor import EmailTextProcessor

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class SenderPhishNet(PhishNet):
-    """PhishNet which uses heuristics based apporach on the sender address to detect
+    """PhishNet which uses heuristics based approaches on the sender address to detect
     phishing emails."""
 
     def __init__(self):

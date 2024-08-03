@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import TypedDict
 
-from .DataStructures import TrainData
+from .datastructs import TrainData
 
 
 class Emails(TypedDict):
@@ -26,7 +26,7 @@ class PhishNet(metaclass=ABCMeta):
             emails (Emails): Emails to analyze.
 
         Returns:
-            list[float]: Liklihood of each email being a phish.
+            list[float]: Likelihood of each email being a phish.
         """
         pass
 
