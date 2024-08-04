@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
       - name: Create env file
         run: |
           cd api
@@ -18,9 +23,10 @@ jobs:
           echo env="prod" > .env
           echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} > .env
           echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} > .env
+          echo PYTHONPATH=/api
 
-      - name: Start container
-        run: docker compose -f docker-compose-test.yaml up -d
+      - name: "Setup dependencies"
+        run: pip install -r api/requirements.txt
 
       - name: Test API
-        run: docker compose -f docker-compose-test.yaml exec api pytest -v tests/
+        run: pytest -v api/tests/
