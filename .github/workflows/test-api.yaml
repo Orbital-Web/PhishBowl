@@ -23,7 +23,6 @@ jobs:
           echo env="prod" >> .env
           echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} >> .env
           echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} >> .env
-          echo PYTHONPATH=/api >> .env
 
       - name: "Setup dependencies"
         run: |
@@ -31,6 +30,4 @@ jobs:
           pip install pytest-dotenv==0.5.2
 
       - name: Test API
-        run: |
-          cd api
-          python -m pytest tests --envfile .env
+        run: pytest api/tests --envfile api/tests
