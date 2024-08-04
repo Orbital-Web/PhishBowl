@@ -31,4 +31,6 @@ jobs:
           pip install pytest-dotenv==0.5.2
 
       - name: Test API
-        run: pytest -v api/tests/
+        run: |
+          cd api
+          python -m pytest tests --envfile .env
