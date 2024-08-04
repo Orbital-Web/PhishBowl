@@ -1,0 +1,40 @@
+networks:
+  net:
+    driver: bridge
+
+services:
+  api:
+    image: phishbowl/api:latest
+    build:
+      context: ./api
+    volumes:
+      - ./api:/app
+    env_file: ./api/.env
+    environment:
+      - ANONYMIZED_TELEMETRY=TRUE
+    depends_on:
+      chromadb:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    networks:
+      - net
+
+  chromadb:
+    image: phishbowl/chromadb:latest
+    build:
+      context: ./chromadb
+    volumes:
+      - chroma-data:/chroma/chroma_data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma_data
+      - ANONYMIZED_TELEMETRY=TRUE
+    ports:
+      - "5000:5000"
+    networks:
+      - net
+
+volumes:
+  chroma-data:
+    driver: local

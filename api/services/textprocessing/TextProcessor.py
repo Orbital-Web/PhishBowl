@@ -7,14 +7,16 @@ from models import Emails
 class EmailTextProcessor:
     """A class for processing and truncating emails."""
 
+    truncate_methods = Literal["none", "end", "content", "content-end"]
+
     def __init__(
         self,
         max_tokens: int = 512,
-        truncate_method: Literal["none", "content", "end"] = "none",
+        truncate_method: truncate_methods = "none",
         tokenizer_model: None | str = None,
     ):
         self.max_tokens = max_tokens
-        self.method: Literal["none", "content", "end"] = truncate_method
+        self.method: EmailTextProcessor.truncate_methods = truncate_method
         self.tokenizer = (
             None
             if tokenizer_model is None
@@ -43,21 +45,37 @@ class EmailTextProcessor:
         Returns:
             list[str]: Formatted text for each email.
         """
-        documents = [
-            self.truncate(sender, subject, body)
-            for sender, subject, body in zip(
-                emails["sender"], emails["subject"], emails["body"]
-            )
-        ]
+        if "label" in emails:  # training
+            documents = [
+                self.truncate(sender, subject, body, label)
+                for sender, subject, body, label in zip(
+                    emails["sender"],
+                    emails["subject"],
+                    emails["body"],
+                    emails["label"],
+                )
+            ]
+        else:  # testing
+            documents = [
+                self.truncate(sender, subject, body, None)
+                for sender, subject, body in zip(
+                    emails["sender"],
+                    emails["subject"],
+                    emails["body"],
+                )
+            ]
         return documents
 
-    def truncate(self, sender: str | None, subject: str | None, body: str) -> str:
+    def truncate(
+        self, sender: str | None, subject: str | None, body: str, label: float | None
+    ) -> str:
         """Truncates the email content string to be below self.max_tokens.
         Truncation strategy depends on self.method and self.tokenizer.
         Method:
             - none: no truncation, tokenizer is ignored
-            - content: always keep whole body, include sender and subject if they fit
-            - end: truncate from the end
+            - end: truncate (label + sender + subject + body) from the end
+            - content: always keep body, include label, sender, and subject if they fit
+            - content-end: apply content then end
         Tokenizer:
             - None: estimate token count based on string length
             - Encoding: use a particular tokenizer to get the exact token count
@@ -66,49 +84,74 @@ class EmailTextProcessor:
             sender (str | None): email sender info
             subject (str | None): email subject line
             body (str): email body
+            label (float | None): email label, may be when processing unseen text
 
         Returns:
             str: The truncated email string
         """
+        label = (
+            f"This is a {['benign', 'phishing'][label >= 0.5]} email:\n"
+            if label is not None
+            else ""
+        )
         sender = f"From: {sender.strip()}\n" if sender else ""
         subject = f"Subject: {subject.strip()}\n" if subject else ""
 
         if self.method == "none":
-            return sender + subject + body
+            return label + sender + subject + body
 
-        if self.method == "content":
-            # count tokens
+        if self.method == "content" or self.method == "content-end":
             if self.tokenizer is None:
-                t_sender = len(sender) * self.tokens_per_chr
-                t_subject = len(subject) * self.tokens_per_chr
-                t_body = len(body) * self.tokens_per_chr
+                # approximate token count
+                n_sender = len(sender) * self.tokens_per_chr
+                n_subject = len(subject) * self.tokens_per_chr
+                n_body = len(body) * self.tokens_per_chr
+                n_label = len(label) * self.tokens_per_chr
             else:
-                t_sender, t_subject, t_body = self.tokenizer.encode_batch(
-                    [sender, subject, body]
+                # compute exact token count
+                sender, subject, body, label = self.tokenizer.encode_batch(
+                    [sender, subject, body, label], disallowed_special=()
                 )
-                t_sender = len(t_sender)
-                t_subject = len(t_subject)
-                t_body = len(t_body)
+                n_sender = len(sender)
+                n_subject = len(subject)
+                n_body = len(body)
+                n_label = len(label)
 
-            # include subject and sender if they fit
-            if t_body + t_sender > self.max_tokens:
-                return body
-            elif t_body + t_sender + t_subject > self.max_tokens:
-                return sender + body
-            else:
-                return sender + subject + body
+            if self.method == "content":
+                # include label, sender, and subject if they fit
+                if n_body + n_label > self.max_tokens:
+                    email = body
+                elif n_body + n_label + n_sender > self.max_tokens:
+                    email = label + body
+                elif n_body + n_label + n_sender + n_subject > self.max_tokens:
+                    email = label + sender + body
+                else:
+                    email = label + sender + subject + body
+                return email if self.tokenizer is None else self.tokenizer.decode(email)
 
-        # truncate from end
-        emailtext = sender + subject + body
+            else:  # self.method == "content-end"
+                # include label, sender and subject if they mostly fit
+                if n_body > self.max_tokens:
+                    email = body
+                if n_body + n_label > self.max_tokens:
+                    email = label + body
+                elif n_body + n_label + n_sender > self.max_tokens:
+                    email = label + sender + body
+                else:
+                    email = label + sender + subject + body
+
+        else:  # self.method == "end":
+            email = label + sender + subject + body
+            if self.tokenizer is not None:
+                email = self.tokenizer.encode(email, disallowed_special=())
+
+        # self.method == "content-end" or "end", truncate from end
         if self.tokenizer is None:
-            t_truncate = len(emailtext) * self.tokens_per_chr - self.max_tokens
-            if t_truncate <= 0:
-                return emailtext
-            else:
-                return emailtext[: -int(t_truncate // self.max_tokens)]
+            # email is str, truncate using approximate token count
+            return email[: int(self.max_tokens // self.tokens_per_chr)]
         else:
-            tokens = self.tokenizer.encode(emailtext)
-            return self.tokenizer.decode(tokens[: self.max_tokens])
+            # email is a list of tokens, truncate to exact count
+            return self.tokenizer.decode(email[: self.max_tokens])
 
     def anonymize(self, emails: Emails) -> Emails:
         """Mask sensitive data from each email.

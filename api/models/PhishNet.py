@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from .datastructs import TrainData
 
@@ -11,8 +11,8 @@ class Emails(TypedDict):
     sender: list[str]
     subject: list[str]
     body: list[str]
-    label: list[float]  # 1 for phishing, 0 for benign
-    unsafe: list[bool]  # True if the email contains a caution or content blocked flag
+    label: NotRequired[list[float]]  # 1 for phishing, 0 for benign
+    unsafe: NotRequired[list[bool]]  # if email contains caution or content blocked flag
 
 
 class PhishNet(metaclass=ABCMeta):

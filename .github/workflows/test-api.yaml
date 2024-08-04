@@ -1,0 +1,13 @@
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start container
+        run: docker-compose -f docker-compose-test.yml -d
+      - name: Test API
+        run: docker-compose -f docker-compose-test.yml exec api pytest -v tests/

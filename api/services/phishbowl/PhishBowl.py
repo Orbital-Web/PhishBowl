@@ -21,7 +21,7 @@ class PhishBowl:
         self.db = AzureDB()
         self.text_processor = EmailTextProcessor(
             max_tokens=8192,
-            truncate_method="end",
+            truncate_method="content-end",
             tokenizer_model="text-embedding-3-small",
         )
         self.batchsize = 64  # batchsize of emails to ingest at once

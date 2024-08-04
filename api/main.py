@@ -54,8 +54,6 @@ def cli_parser() -> ArgumentParser:
         help="flag to reset the phishbowl before populating",
         action="store_true",
     )
-    # test
-    parser_test = subparsers.add_parser("test", help="runs all tests")
 
     return parser
 

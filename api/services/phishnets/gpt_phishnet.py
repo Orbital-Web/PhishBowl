@@ -85,7 +85,7 @@ class GPTPhishNet(PhishNet):
             except RateLimitError:
                 waitfor = 10 * (i + 1)
                 logger.warning(f"Rate limit reached, retrying after {waitfor} seconds.")
-                asyncio.sleep(waitfor)
+                await asyncio.sleep(waitfor)
 
             if result:
                 break

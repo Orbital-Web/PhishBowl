@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     app.phishbowl = await load_phishbowl()
     app.phishnet = EnsemblePhishNet(app.phishbowl)
     app.image_processor = EmailImageProcessor()
-    app.text_processor = EmailTextProcessor()
+    app.text_processor = EmailTextProcessor(truncate_method="none")
     yield
     # shutdown
 

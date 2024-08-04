@@ -43,7 +43,7 @@ def evaluate_phishnet(net_name: str, train: bool, reset: bool, batchsize: int):
     y_true = []
     y_pred = []
     for emails in traindata.datasetdict["test"].iter(batchsize):
-        y_true.extend(emails["label"])
+        y_true.extend(emails.pop("label"))
         predictions = asyncio.run(phishnet.analyze(emails))
         y_pred.extend(predictions)
         print_performances(y_true, y_pred)
