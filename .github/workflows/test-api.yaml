@@ -1,13 +1,26 @@
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Create env file
+        run: |
+          cd api
+          touch .env
+          echo env="prod" > .env
+          echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} > .env
+          echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} > .env
+
       - name: Start container
-        run: docker-compose -f docker-compose-test.yml -d
+        run: docker compose -f docker-compose-test.yaml up -d
+
       - name: Test API
-        run: docker-compose -f docker-compose-test.yml exec api pytest -v tests/
+        run: docker compose -f docker-compose-test.yaml exec api pytest -v tests/
