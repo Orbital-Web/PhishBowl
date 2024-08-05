@@ -1,6 +1,3 @@
-import sys
-
-print("\n".join(sys.path))
 import tiktoken
 from models import Emails
 from services.textprocessing import EmailTextProcessor

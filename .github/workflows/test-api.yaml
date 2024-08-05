@@ -29,11 +29,6 @@ jobs:
           pip install -r api/requirements.txt
           pip install pytest-dotenv==0.5.2
 
-      - name: temp
-        run: |
-          cd api
-          python -m tests.test_textprocessor
-
       - name: Test API
         run: |
           cd api
