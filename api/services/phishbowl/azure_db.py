@@ -9,7 +9,7 @@ import chromadb
 class AzureDB(PhishBowlDB):
     """A PhishBowl database using azure openai embeddings."""
 
-    collection_name = "phishbowl-azure"
+    collection_name = "phishbowl-azure-openai"
 
     async def initialize_db(self):
         self.client = await chromadb.AsyncHttpClient(host="chromadb", port=5000)

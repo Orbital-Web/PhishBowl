@@ -20,7 +20,7 @@ class PhishBowl:
     def __init__(self):
         self.db = AzureDB()
         self.text_processor = EmailTextProcessor(
-            max_tokens=8192,
+            max_tokens=8191,
             truncate_method="content-end",
             tokenizer_model="text-embedding-3-small",
         )

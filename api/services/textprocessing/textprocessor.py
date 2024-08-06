@@ -92,7 +92,7 @@ class EmailTextProcessor:
         label = (
             f"This is a {['benign', 'phishing'][label >= 0.5]} email:\n"
             if label is not None
-            else ""
+            else "This is an email:\n"
         )
         sender = f"From: {sender.strip()}\n" if sender else ""
         subject = f"Subject: {subject.strip()}\n" if subject else ""

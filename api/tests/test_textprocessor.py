@@ -50,11 +50,12 @@ def test_textprocessor_end_none_should_truncate_from_end_to_around_max_tokens():
         "sender": ["one two three four"],
         "subject": ["five six seven eight"],
         "body": ["nine ten eleven twelve"],
+        "label": [0.9],
     }
     results = processor.to_text(emails)
     assert len(results) == 1
     assert len(results[0]) == 32  # 16 tokens if 0.5 tokens/char
-    assert "one" in results[0]
+    assert "phishing" in results[0]
     assert "twelve" not in results[0]  # truncated
 
 
@@ -67,11 +68,12 @@ def test_textprocessor_end_model_should_truncate_from_end_to_exactly_max_tokens(
         "sender": ["one two three four"],
         "subject": ["five six seven eight"],
         "body": ["nine ten eleven twelve"],
+        "label": [0.9],
     }
     results = processor.to_text(emails)
     assert len(results) == 1
     assert len(tokenizer.encode(results[0])) == 16
-    assert "one" in results[0]
+    assert "phishing" in results[0]
     assert "twelve" not in results[0]  # truncated
 
 
@@ -204,11 +206,12 @@ def test_textprocessor_contentend_none_should_truncate_from_end_to_around_max_to
         "sender": ["one two three four"],
         "subject": ["five six seven eight"],
         "body": ["nine ten eleven twelve"],
+        "label": [0.1],
     }
     results = processor.to_text(emails)
     assert len(results) == 1
     assert len(results[0]) == 32  # 16 tokens if 0.5 tokens/char
-    assert "one" in results[0]
+    assert "benign" in results[0]
     assert "twelve" not in results[0]  # truncated
 
 
@@ -221,11 +224,12 @@ def test_textprocessor_contentend_model_should_truncate_from_end_to_exactly_max_
         "sender": ["one two three four"],
         "subject": ["five six seven eight"],
         "body": ["nine ten eleven twelve"],
+        "label": [0.1],
     }
     results = processor.to_text(emails)
     assert len(results) == 1
     assert len(tokenizer.encode(results[0])) == 16
-    assert "one" in results[0]
+    assert "benign" in results[0]
     assert "twelve" not in results[0]  # truncated
 
 
