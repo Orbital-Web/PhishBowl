@@ -13,6 +13,8 @@ class Emails(TypedDict):
     body: list[str]
     label: NotRequired[list[float]]  # 1 for phishing, 0 for benign
     unsafe: NotRequired[list[bool]]  # if email contains caution or content blocked flag
+    text: NotRequired[list[str]]  # the processed email contents
+    id: NotRequired[list[str]]  # the processed email ids
 
 
 class PhishNet(metaclass=ABCMeta):

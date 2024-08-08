@@ -29,7 +29,6 @@ async def analyze_image(
     phishnet: PhishNet = request.app.phishnet
     phishbowl: PhishBowl = request.app.phishbowl
     image_processor: EmailImageProcessor = request.app.image_processor
-    text_processor: EmailTextProcessor = request.app.text_processor
 
     # ensure input is an image file
     if file.content_type not in ["image/jpeg", "image/png", "image/tiff"]:
@@ -43,10 +42,7 @@ async def analyze_image(
 
     # add to phishbowl if TODO:
     if False:
-        # anonymize if requested
-        if anonymize:
-            emails = text_processor.anonymize(emails)
-        await phishbowl.add_emails(emails)
+        await phishbowl.add_emails(emails, anonymize)
 
     return response[0]
 
@@ -76,10 +72,7 @@ async def analyze_text(
 
     # add to phishbowl if TODO:
     if False:
-        # anonymize if requested
-        if anonymize:
-            emails = text_processor.anonymize(emails)
-        await phishbowl.add_emails(emails)
+        await phishbowl.add_emails(emails, anonymize)
 
     return response[0]
 
@@ -102,7 +95,6 @@ async def analyze_email(
     """
     phishnet: PhishNet = request.app.phishnet
     phishbowl: PhishBowl = request.app.phishbowl
-    text_processor: EmailTextProcessor = request.app.text_processor
 
     emails = {
         "sender": [email.sender],
@@ -113,10 +105,7 @@ async def analyze_email(
 
     # add to phishbowl if TODO:
     if False:
-        # anonymize if requested
-        if anonymize:
-            emails = text_processor.anonymize(emails)
-        await phishbowl.add_emails(emails)
+        await phishbowl.add_emails(emails, anonymize)
 
     return response[0]
 
@@ -127,7 +116,7 @@ async def analyze_emails_batch(
     """Analyzes each email in the email batch for whether it is a phishing email.
 
     Args:
-        phishnet (PhishNet): PhishNet to use for analyzis.
+        phishnet (PhishNet): PhishNet to use for analysis.
         emails (Emails): The email batch to analyze.
 
     Returns:

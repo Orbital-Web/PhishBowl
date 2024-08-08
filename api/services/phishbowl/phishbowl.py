@@ -115,14 +115,16 @@ class PhishBowl:
         """Removes all documents from the phishbowl. Use with care."""
         await self.db.clear()
 
-    async def delete_emails(self, emails: Emails):
+    async def delete_emails(self, emails: Emails, anonymize: bool = False):
         """Removes the emails from the phishbowl.
 
         Args:
             emails (Emails): Emails to remove.
+            anonymize (bool, optional): Whether the email content was anonymized when
+                added
         """
-        documents = self.text_processor.to_text(emails)
-        ids = [hashlib.sha256(doc.encode("utf-8")).hexdigest() for doc in documents]
+        processed_emails = self.process_emails(emails, anonymize)
+        ids = processed_emails["id"]
         await self.db.collection.delete(ids=ids)
 
     async def analyze_emails(self, emails: Emails) -> list[float]:
