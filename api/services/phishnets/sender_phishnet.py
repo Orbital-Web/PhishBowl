@@ -2,7 +2,7 @@ import logging
 import re
 
 import dns.resolver
-from models import Emails, PhishNet, TrainData
+from models import Emails, PhishNet, RawAnalysisResult, TrainData
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +21,20 @@ class SenderPhishNet(PhishNet):
         with open("/app/services/phishnets/data/spam-domains.txt", "r") as f:
             self.spam_domains = set(line.strip() for line in f)
 
-    async def analyze(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[RawAnalysisResult]:
         senders = await self.split_senders(emails)
 
-        scores = []
+        results: list[RawAnalysisResult] = []
         for name, domain in senders:
             if not domain:
-                scores.append(0)
+                results.append(0)
                 continue
             mx_score = await self.check_mx_record(domain)
             domain_score = await self.check_domain_spam(domain)
-            scores.append(min(1.0, (mx_score + domain_score) / 2.0))
-        return scores
+
+            score = min(1.0, (mx_score + domain_score) / 2.0)
+            results.append({"phishing_score": score})
+        return results
 
     def train(self, traindata: TrainData):
         logger.warning("Training is not supported on the SenderPhishNet")

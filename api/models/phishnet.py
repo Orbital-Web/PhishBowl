@@ -17,18 +17,25 @@ class Emails(TypedDict):
     id: NotRequired[list[str]]  # the processed email ids
 
 
+class RawAnalysisResult(TypedDict):
+    """A dictionary for the analysis result of an email. There may be other information
+    in the dictionary such as the confidence."""
+
+    phishing_score: float  # 1 for phishing, 0 for benign
+
+
 class PhishNet(metaclass=ABCMeta):
     """A base class for detecting phishing emails."""
 
     @abstractmethod
-    async def analyze(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[RawAnalysisResult]:
         """Analyzes each email on whether they're a phish or not.
 
         Args:
             emails (Emails): Emails to analyze.
 
         Returns:
-            list[float]: Likelihood of each email being a phish.
+            list[RawAnalysisResult]: Results of the analysis for each email.
         """
         pass
 

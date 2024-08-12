@@ -2,10 +2,8 @@ import hashlib
 import logging
 import os
 
-import numpy as np
 from datasets import IterableDataset
 from models import Emails
-from scipy.special import softmax
 from services.textprocessing import EmailTextProcessor
 
 from .azure_db import AzureDB
@@ -26,9 +24,6 @@ class PhishBowl:
         )
         self.batchsize = 64  # batchsize of emails to ingest at once
         self.debug = os.getenv("env", "prod") != "prod"
-        # analysis settings
-        self.comparison_size = 12  # number of emails to use as reference when analyzing
-        self.confidence_decay = 0.8  # positive value specifying how fast the confidence decays with distance
 
     def process_emails(self, emails: Emails, anonymize: bool) -> dict[str, list]:
         """Returns the formatted email texts (optionally may be anonymized) and ids.
@@ -126,36 +121,6 @@ class PhishBowl:
         processed_emails = self.process_emails(emails, anonymize)
         ids = processed_emails["id"]
         await self.db.collection.delete(ids=ids)
-
-    async def analyze_emails(self, emails: Emails) -> list[float]:
-        """Compares the emails to the emails in the phishbowl and returns a score
-        between 0 and 1 for each email's likelihood of being a phish.
-
-        Args:
-            emails (Emails): Emails to analyze.
-
-        Returns:
-            list[float]: Likelihood of each email being a phish.
-        """
-        # get both phishing and benign emails to ensure both sets are represented
-        documents = self.text_processor.to_text(emails)
-        matches = await self.db.collection.query(
-            query_texts=documents,
-            n_results=self.comparison_size,
-            include=["metadatas", "distances"],
-        )
-
-        # calculate phish score for each email
-        phish_scores = []
-        for distances, metadatas in zip(matches["distances"], matches["metadatas"]):
-            confidence = np.exp(-self.confidence_decay * distances[0] * distances[0])
-            weights = softmax(-1 * np.array(distances))
-            scores = [metadata["label"] for metadata in metadatas]
-
-            phish_score = confidence * np.dot(weights, scores)
-            phish_scores.append(phish_score)
-
-        return phish_scores
 
 
 async def load_phishbowl() -> PhishBowl:

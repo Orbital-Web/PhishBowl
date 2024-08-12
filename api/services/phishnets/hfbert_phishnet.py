@@ -3,7 +3,7 @@ import logging
 import os
 
 from huggingface_hub import AsyncInferenceClient, login
-from models import Emails, PhishNet, TrainData
+from models import Emails, PhishNet, RawAnalysisResult, TrainData
 from services.textprocessing import EmailTextProcessor
 from transformers import BertTokenizer
 
@@ -25,7 +25,7 @@ class HFBERTPhishNet(PhishNet):
             "ealvaradob/bert-finetuned-phishing"
         )
 
-    async def analyze(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[RawAnalysisResult]:
         # tokenize and decode to prevent going over the token limit as there aren't any
         # options to enable truncation using the client, or take tokens as input
         # if it's stupid but it works, it isn't stupid...
@@ -39,7 +39,13 @@ class HFBERTPhishNet(PhishNet):
             *[self.client.text_classification(doc) for doc in truncated_documents]
         )
         return [
-            preds[0]["score"] if preds[0]["label"][0] == "p" else 1 - preds[0]["score"]
+            {
+                "phishing_score": (
+                    preds[0]["score"]
+                    if preds[0]["label"][0] == "p"
+                    else 1 - preds[0]["score"]
+                )
+            }
             for preds in predictions
         ]
 

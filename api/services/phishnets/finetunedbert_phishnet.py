@@ -5,7 +5,7 @@ import evaluate
 import numpy as np
 import torch
 from huggingface_hub import login
-from models import Emails, PhishNet, TrainData
+from models import Emails, PhishNet, RawAnalysisResult, TrainData
 from services.textprocessing import EmailTextProcessor
 from transformers import (
     BertForSequenceClassification,
@@ -73,12 +73,16 @@ class FineTunedBERTPhishNet(PhishNet):
             device=device.index if is_cuda else -1,
         )
 
-    async def analyze(self, emails: Emails) -> list[float]:
+    async def analyze(self, emails: Emails) -> list[RawAnalysisResult]:
         predictions = self.classifier(
             self.email_processor.to_text(emails), truncation=True
         )
         return [
-            pred["score"] if pred["label"][0] == "p" else 1 - pred["score"]
+            {
+                "phishing_score": (
+                    pred["score"] if pred["label"][0] == "p" else 1 - pred["score"]
+                )
+            }
             for pred in predictions
         ]
 

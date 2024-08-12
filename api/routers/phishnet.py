@@ -122,10 +122,11 @@ async def analyze_emails_batch(
     Returns:
         list[AnalysisResponse]: Analysis result for each email.
     """
-    scores = await phishnet.analyze(emails)
-    responses = []
-    for score in scores:
-        label = "PHISHING" if score >= 0.5 else "LEGITIMATE"
-        confidence = min(1, 2 * abs(score - 0.5))
+    results = await phishnet.analyze(emails)
+    responses: list[AnalysisResponse] = []
+    for result in results:
+        score = result["phishing_score"]
+        label = result.get("label", "PHISHING" if score >= 0.5 else "LEGITIMATE")
+        confidence = result.get("confidence", min(1, 2 * abs(score - 0.5)))
         responses.append(AnalysisResponse(label=label, confidence=confidence))
     return responses
