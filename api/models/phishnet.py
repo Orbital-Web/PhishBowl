@@ -8,8 +8,8 @@ class Emails(TypedDict):
     """A dictionary representing multiple emails. Each field should be of the same
     length, with the same indices corresponding to the same email."""
 
-    sender: list[str]
-    subject: list[str]
+    sender: list[str | None]
+    subject: list[str | None]
     body: list[str]
     label: NotRequired[list[float]]  # 1 for phishing, 0 for benign
     unsafe: NotRequired[list[bool]]  # if email contains caution or content blocked flag

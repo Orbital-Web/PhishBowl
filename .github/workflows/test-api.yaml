@@ -25,9 +25,7 @@ jobs:
           echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} >> .env
 
       - name: "Setup dependencies"
-        run: |
-          pip install -r api/requirements.txt
-          pip install pytest-dotenv==0.5.2
+        run: pip install -r api/requirements.txt
 
       - name: Test API
         run: |

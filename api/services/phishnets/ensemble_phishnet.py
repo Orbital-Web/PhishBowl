@@ -27,7 +27,7 @@ class EnsemblePhishNet(PhishNet):
             conf
         )  # weight of semantic results as a function of its confidence
 
-    async def analyze(self, emails: Emails) -> list[GPTAnalysisResult]:
+    async def analyze(self, emails: Emails) -> list[EnsembleAnalysisResult]:
         ensemble_results = await asyncio.gather(
             self.semantic_net.analyze(emails), self.gpt_net.analyze(emails)
         )
