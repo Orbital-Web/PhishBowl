@@ -1,0 +1,79 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'api/**/*.py'
+
+  test-api:
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clear up spaces
+        run: rm -rf /opt/hostedtoolcache
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Build Docker api container
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: false
+          load: true
+          tags: phishbowl/api:latest
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build Docker chromadb container
+        uses: docker/build-push-action@v5
+        with:
+          context: ./chromadb
+          push: false
+          load: true
+          tags: phishbowl/chromadb:latest
+          cache-from: type=gha,scope=chromadb
+          cache-to: type=gha,mode=max,scope=chromadb
+
+      - name: Create api env file
+        run: |
+          cd api
+          touch .env
+          echo env="prod" >> .env
+          echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} >> .env
+          echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} >> .env
+
+      - name: Create app env file
+        run: |
+          cd app
+          touch .env
+
+      - name: Start Docker container
+        run: docker compose up -d api chromadb
+
+      - name: Run API tests
+        run: docker exec -t phishbowl-api-1 pytest tests
+
+

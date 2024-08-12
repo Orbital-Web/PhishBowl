@@ -11,8 +11,8 @@ from services.phishnets import (
     SenderPhishNet,
 )
 
-requires_docker = pytest.mark.skip(
-    reason="no way of currently testing this without docker running"
+requires_docker = pytest.mark.skipif(
+    not os.getenv("IS_DOCKER_CONTAINER", False), reason="requires docker to be running"
 )
 requires_azure = pytest.mark.skipif(
     "AZURE_OPENAI_API_KEY" not in os.environ
