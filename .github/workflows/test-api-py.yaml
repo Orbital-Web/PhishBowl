@@ -38,10 +38,23 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Build Docker containers
-        run: |
-          docker buildx build -t phishbowl/api:latest --cache-to type=gha --cache-from type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }} --load ./api
-          docker buildx build -t phishbowl/chromadb:latest --cache-to type=gha --cache-from type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }} --load ./chromadb
+      - name: Build Docker api container
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: false
+          tags: phishbowl/api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Docker chromadb container
+        uses: docker/build-push-action@v5
+        with:
+          context: ./chromadb
+          push: false
+          tags: phishbowl/chromadb:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create api env file
         run: |
