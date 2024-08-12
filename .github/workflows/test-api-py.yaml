@@ -1,0 +1,52 @@
+on:
+  push:
+    branches:
+      - main
+      - gh-actions
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'api/**/*.py'
+
+  test-api:
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Create env file
+        run: |
+          cd api
+          touch .env
+          echo env="prod" >> .env
+          echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} >> .env
+          echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} >> .env
+
+      - name: Start Docker container
+        run: docker compose -f docker-compose.yaml up -d --build
+
+      - name: Run API tests
+        run: docker exec -t api pytest tests
+
+
