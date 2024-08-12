@@ -45,8 +45,8 @@ jobs:
           push: false
           load: true
           tags: phishbowl/api:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
 
       - name: Build Docker chromadb container
         uses: docker/build-push-action@v5
@@ -55,8 +55,8 @@ jobs:
           push: false
           load: true
           tags: phishbowl/chromadb:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=chromadb
+          cache-to: type=gha,mode=max,scope=chromadb
 
       - name: Create api env file
         run: |
