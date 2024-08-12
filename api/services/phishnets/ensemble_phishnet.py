@@ -31,6 +31,7 @@ class EnsemblePhishNet(PhishNet):
         ensemble_results = await asyncio.gather(
             self.semantic_net.analyze(emails), self.gpt_net.analyze(emails)
         )
+        print("A")
 
         results: list[EnsembleAnalysisResult] = []
         for semantic_result, gpt_result in zip(*ensemble_results):
