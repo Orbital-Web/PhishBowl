@@ -85,7 +85,7 @@ class GPTPhishNet(PhishNet):
                     "confidence": 8,
                     "reason": "email contains either hateful, sexual, violent, or self-harm content",
                 }
-            except json.decoder.JSONDecodeError as e:
+            except json.decoder.JSONDecodeError:
                 logger.warning(f"Failed to parse JSON on following message:\n{message}")
             except RateLimitError:
                 waitfor = 10 * (i + 1)

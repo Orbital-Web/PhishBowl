@@ -7,7 +7,6 @@ from models import Emails
 from services.textprocessing import EmailTextProcessor
 
 from .azure_db import AzureDB
-from .hf_db import SentenceTransformerDB
 
 logger = logging.getLogger(__name__)
 

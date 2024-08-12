@@ -20,7 +20,7 @@ def load_net(name: str) -> PhishNet:
     Returns:
         PhishNet: Loaded model.
     """
-    return getattr(importlib.import_module(f"services.phishnets"), name)()
+    return getattr(importlib.import_module("services.phishnets"), name)()
 
 
 def evaluate_phishnet(net_name: str, train: bool, reset: bool, batchsize: int):

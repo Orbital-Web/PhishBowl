@@ -3,7 +3,6 @@ import logging
 
 import numpy as np
 from models import Emails, PhishNet, RawAnalysisResult, TrainData
-from scipy.special import softmax
 from services.phishbowl import PhishBowl, load_phishbowl
 
 logger = logging.getLogger(__name__)

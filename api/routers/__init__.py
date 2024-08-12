@@ -1,13 +1,14 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from routers.phishbowl import router as phishbowl_router
-from routers.phishnet import router as phishnet_router
 from schemas import HealthCheck
 from services.imageprocessing import EmailImageProcessor
 from services.phishbowl import load_phishbowl
 from services.phishnets import EnsemblePhishNet
 from services.textprocessing import EmailTextProcessor
+
+from routers.phishbowl import router as phishbowl_router
+from routers.phishnet import router as phishnet_router
 
 tags = [
     {"name": "PhishBowl", "description": "Endpoints for operation on the PhishBowl"},

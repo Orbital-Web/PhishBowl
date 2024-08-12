@@ -1,7 +1,7 @@
-from chromadb.utils import embedding_functions
 from models import PhishBowlDB
 
 import chromadb
+from chromadb.utils import embedding_functions
 
 
 class SentenceTransformerDB(PhishBowlDB):

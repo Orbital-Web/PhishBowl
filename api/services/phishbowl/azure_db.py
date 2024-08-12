@@ -1,9 +1,9 @@
 import os
 
-from chromadb.utils import embedding_functions
 from models import PhishBowlDB
 
 import chromadb
+from chromadb.utils import embedding_functions
 
 
 class AzureDB(PhishBowlDB):
