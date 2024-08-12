@@ -40,8 +40,12 @@ jobs:
 
       - name: Build Docker containers
         run: |
-          docker buildx build -t phishbowl/api:latest --cache-to type=gha --cache-from type=gha,mode=max --load ./api
-          docker buildx build -t phishbowl/chromadb:latest --cache-to type=gha --cache-from type=gha,mode=max --load ./chromadb
+          docker buildx build -t phishbowl/api:latest
+            --cache-to type=gha --cache-from type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }} --load
+            ./api
+          docker buildx build -t phishbowl/chromadb:latest
+            --cache-to type=gha --cache-from type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }} --load
+            ./chromadb
 
       - name: Create api env file
         run: |
