@@ -44,7 +44,8 @@ jobs:
           --cache-to type=gha
           --cache-from type=gha,mode=max
           --load
-          ./api
+          –-build-context api=api
+          –-build-context chromadb=chromadb
 
       - name: Create api env file
         run: |
@@ -63,6 +64,6 @@ jobs:
         run: docker compose up -d api chromadb
 
       - name: Run API tests
-        run: docker exec -t api pytest tests
+        run: docker exec -t phishbowl-api-1 pytest tests
 
 
