@@ -40,6 +40,7 @@ jobs:
 
       - name: Build Docker container
         run: docker buildx build
+          -t phishbowl/api:latest
           --cache-to type=gha
           --cache-from type=gha,mode=max
 
