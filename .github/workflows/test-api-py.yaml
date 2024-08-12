@@ -35,13 +35,18 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Create env file
+      - name: Create api env file
         run: |
           cd api
           touch .env
           echo env="prod" >> .env
           echo AZURE_OPENAI_API_KEY=${{ secrets.AZURE_OPENAI_API_KEY }} >> .env
           echo AZURE_OPENAI_ENDPOINT=${{ secrets.AZURE_OPENAI_ENDPOINT }} >> .env
+
+      - name: Create app env file
+        run: |
+          cd app
+          touch .env
 
       - name: Start Docker container
         run: docker compose -f docker-compose.yaml up -d --build
