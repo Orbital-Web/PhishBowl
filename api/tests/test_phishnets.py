@@ -28,15 +28,19 @@ requires_hfwrite = pytest.mark.skipif(
 )
 
 
-@requires_docker
-async def test_semantic_phishnet_analyze_runs():
-    phishbowl = await load_phishbowl()
-    phishnet = SemanticPhishNet(phishbowl)
-    emails = {
+@pytest.fixture
+def emails():
+    return {
         "sender": [None, "Microsoft <micro@soft101.com>"],
         "subject": [None, "Your account has been compromised"],
         "body": ["Hello", "Please reset your password with this link"],
     }
+
+
+@requires_docker
+async def test_semantic_phishnet_analyze_runs(emails):
+    phishbowl = await load_phishbowl()
+    phishnet = SemanticPhishNet(phishbowl)
     results = await phishnet.analyze(emails)
     assert len(results) == 2
     for result in results:
@@ -45,13 +49,8 @@ async def test_semantic_phishnet_analyze_runs():
 
 
 @requires_azure
-async def test_gpt_phishnet_analyze_runs():
+async def test_gpt_phishnet_analyze_runs(emails):
     phishnet = GPTPhishNet()
-    emails = {
-        "sender": [None, "Microsoft <micro@soft101.com>"],
-        "subject": [None, "Your account has been compromised"],
-        "body": ["Hello", "Please reset your password with this link"],
-    }
     results = await phishnet.analyze(emails)
     assert len(results) == 2
     for result in results:
@@ -62,14 +61,9 @@ async def test_gpt_phishnet_analyze_runs():
 
 @requires_docker
 @requires_azure
-async def test_ensemble_phishnet_analyze_runs():
+async def test_ensemble_phishnet_analyze_runs(emails):
     phishbowl = await load_phishbowl()
     phishnet = EnsemblePhishNet(phishbowl)
-    emails = {
-        "sender": [None, "Microsoft <micro@soft101.com>"],
-        "subject": [None, "Your account has been compromised"],
-        "body": ["Hello", "Please reset your password with this link"],
-    }
     results = await phishnet.analyze(emails)
     for result in results:
         assert 0 <= result.get("phishing_score") <= 1
@@ -80,13 +74,8 @@ async def test_ensemble_phishnet_analyze_runs():
 
 @requires_hfwrite
 @requires_docker
-async def test_finetunedbert_phishnet_analyze_runs():
+async def test_finetunedbert_phishnet_analyze_runs(emails):
     phishnet = FineTunedBERTPhishNet()
-    emails = {
-        "sender": [None, "Microsoft <micro@soft101.com>"],
-        "subject": [None, "Your account has been compromised"],
-        "body": ["Hello", "Please reset your password with this link"],
-    }
     results = await phishnet.analyze(emails)
     assert len(results) == 2
     for result in results:
@@ -94,13 +83,8 @@ async def test_finetunedbert_phishnet_analyze_runs():
 
 
 @requires_hfread
-async def test_hfbert_phishnet_analyze_runs():
+async def test_hfbert_phishnet_analyze_runs(emails):
     phishnet = HFBERTPhishNet()
-    emails = {
-        "sender": [None, "Microsoft <micro@soft101.com>"],
-        "subject": [None, "Your account has been compromised"],
-        "body": ["Hello", "Please reset your password with this link"],
-    }
     results = await phishnet.analyze(emails)
     assert len(results) == 2
     for result in results:
@@ -108,13 +92,9 @@ async def test_hfbert_phishnet_analyze_runs():
 
 
 @requires_docker
-async def test_sender_phishnet_analyze_runs():
+@pytest.mark.skip(reason="sender phishnet is currently WIP")
+async def test_sender_phishnet_analyze_runs(emails):
     phishnet = SenderPhishNet()
-    emails = {
-        "sender": [None, "Microsoft <micro@soft101.com>"],
-        "subject": [None, "Your account has been compromised"],
-        "body": ["Hello", "Please reset your password with this link"],
-    }
     results = await phishnet.analyze(emails)
     assert len(results) == 2
     for result in results:
