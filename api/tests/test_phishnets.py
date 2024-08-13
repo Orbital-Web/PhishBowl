@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from services.phishbowl import load_phishbowl
 from services.phishnets import (
@@ -10,21 +8,12 @@ from services.phishnets import (
     SemanticPhishNet,
     SenderPhishNet,
 )
-
-requires_docker = pytest.mark.skipif(
-    not os.getenv("IS_DOCKER_CONTAINER", False), reason="requires docker to be running"
-)
-requires_azure = pytest.mark.skipif(
-    "AZURE_OPENAI_API_KEY" not in os.environ
-    or "AZURE_OPENAI_ENDPOINT" not in os.environ,
-    reason="requires azure openai endpoint and key",
-)
-requires_hfread = pytest.mark.skipif(
-    "HUGGINGFACE_TOKEN_READ" not in os.environ, reason="requires huggingface read token"
-)
-requires_hfwrite = pytest.mark.skipif(
-    "HUGGINGFACE_TOKEN_WRITE" not in os.environ,
-    reason="requires huggingface write token",
+from tests.decorators import (
+    requires_azure,
+    requires_docker,
+    requires_hfread,
+    requires_hfwrite,
+    skip_wip,
 )
 
 
@@ -92,7 +81,7 @@ async def test_hfbert_phishnet_analyze_runs(emails):
 
 
 @requires_docker
-@pytest.mark.skip(reason="sender phishnet is currently WIP")
+@skip_wip
 async def test_sender_phishnet_analyze_runs(emails):
     phishnet = SenderPhishNet()
     results = await phishnet.analyze(emails)
