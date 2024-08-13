@@ -57,16 +57,20 @@ Note that for PhishNet to work, you'll need to add a few sample emails to the Ph
 
 ## Advanced Usage
 
-There are several features available through `api/main.py` for things such as evaluating different PhishNets and populating the PhishBowl. To use it, ensure either `docker-compose.yaml` or `docker-compose-dev.yaml` is running, and either attach a shell to `api` or run the commands directly by appending them after `docker exec -it phishbowl-api-1`.
+There are several features available through `api/main.py` such as evaluating different PhishNets and populating the PhishBowl. To use them, ensure either `docker-compose.yaml` or `docker-compose-dev.yaml` is running, and either attach a shell to `api` or run the commands directly by appending them after `docker exec -it phishbowl-api-1`.
 
 To get all available commands, run `python main.py -h`.
 
 ### Populating the PhishBowl
 
-To analyze emails using PhishNet, you will need to add a few sample emails to the PhishBowl. You can either add your own emails via the API ([localhost:8000](localhost:8000)), or run `python main.py populate` to populate PhishBowl using a curated dataset, You will need to download the dataset yourself and add them to `/api/services/data/curated`. You will get a more detailed instruction when running populate for the first time.
+To analyze emails using PhishNet, you will need to add a few sample emails to the PhishBowl. You can either add your own emails via the API ([localhost:8000](localhost:8000)), or run `python main.py populate` to populate the PhishBowl using a curated dataset. You will need to download the dataset yourself and add them to `/api/services/data/curated`. You will get a more detailed instruction when running populate for the first time.
 
-For the first time you run populate after downloading the dataset, the data loader will load all emails in memory before shuffling them and splitting them into train and test sets and saving them to file. After this step, you may delete the `/api/services/data/curated` directory and future loading will happen lazily, thus not using as much memory.
+For the first time you run populate after downloading the dataset, the data loader will load all emails in memory before shuffling, splitting into train and test sets, and saving to file. After this step, you may delete the `/api/services/data/curated` directory and future loading will happen lazily, thus not using as much memory.
 
 ### Evaluating PhishNets
 
-There are several different PhishNets implemented already, such as GPTPhishNet, SemanticPhishNet, and FineTunedBERTPhishNET. Some of these PhishNets will require different API keys, as shown in the [Development](#development) section. You can evaluate different PhishNets by running `python main.py eval NAME`. There are other optional arguments such as a retrain flag or batch size which is important if your azure API is rate limited. For more details, run `python main.py eval -h`.
+There are several different PhishNets implemented already, such as GPTPhishNet, SemanticPhishNet, and FineTunedBERTPhishNET. Some of these PhishNets will require different API keys, as shown in the [Development](#development) section. You can evaluate different PhishNets by running `python main.py eval NAME`. There are other optional arguments such as a retrain flag or batch size which is important if your API is rate limited. For more details, run `python main.py eval -h`.
+
+### Testing
+
+There are several tests scripts which can be called with the `pytest` command inside the api container. Reference the [Pytest usage guide](https://docs.pytest.org/en/6.2.x/usage.html) more details on running a specific test. For local usage, it is recommended to add the [-v flag](https://docs.pytest.org/en/stable/how-to/output.html) for verbose outputs.

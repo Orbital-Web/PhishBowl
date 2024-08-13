@@ -72,8 +72,8 @@ async def test_ensemble_phishnet_analyze_runs(emails):
         assert isinstance(result.get("reason"), str)
 
 
-@requires_hfwrite
 @requires_docker
+@requires_hfwrite
 async def test_finetunedbert_phishnet_analyze_runs(emails):
     phishnet = FineTunedBERTPhishNet()
     results = await phishnet.analyze(emails)
