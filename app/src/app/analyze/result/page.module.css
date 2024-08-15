@@ -7,29 +7,28 @@
     overflow-y: hidden;
 }
 
-.results .results-summary {
+.results .summary {
     margin: 20vh 0;
     text-align: center;
 }
 
-.results .results-summary .result-gauge {
+.results .summary .gauge {
     margin-top: -4rem;
     width: 36rem;
     height: 18rem;
 }
 
-.results .result-details {
+/* .results .result_details {
     width: 80vw;
 }
 
-.results .result-details article {
+.results .result_details article {
     display: flex;
     flex-direction: row;
     width: 80vw;
 }
 
-.results .result-details article .detail-gauge {
+.results .result_details article .detail_gauge {
     border: 1px solid white;
     width: 18rem;
-}
-
+} */

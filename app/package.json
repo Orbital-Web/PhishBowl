@@ -1,41 +1,30 @@
 {
-    "name": "react-app",
-    "version": "1.0.0",
-    "private": true,
-    "dependencies": {
-        "@fortawesome/fontawesome-svg-core": "^6.5.2",
-        "@fortawesome/free-solid-svg-icons": "^6.5.2",
-        "@fortawesome/react-fontawesome": "^0.2.2",
-        "apexcharts": "^3.50.0",
-        "react": "^18.0.0",
-        "react-apexcharts": "^1.4.1",
-        "react-dom": "^18.0.0",
-        "react-quill": "^2.0.0",
-        "react-router-dom": "^6.24.1",
-        "react-scripts": "5.0.0"
-    },
-    "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "react-app/jest"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
-        ]
-    }
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "apexcharts": "^3.52.0",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-apexcharts": "^1.4.1",
+    "react-dom": "^18",
+    "react-quill": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "typescript": "^5"
+  }
 }

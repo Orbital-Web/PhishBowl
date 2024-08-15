@@ -1,12 +1,14 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./Home.css";
+import Link from "next/link";
 
-function Home() {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImage, faT } from "@fortawesome/free-solid-svg-icons";
+
+import styles from "./page.module.css";
+
+export default function HomePage() {
   return (
-    <div className="home">
-      <div className="header">
+    <div className={styles.home}>
+      <div className={styles.header}>
         <h1 className="text-primary">Analyze with PhishNet</h1>
         <p className="subtext">
           PhishNet may anonymize and add your email to the PhishBowl to prevent
@@ -15,20 +17,20 @@ function Home() {
         </p>
       </div>
 
-      <div className="options">
-        <Link to="/image">
+      <div className={styles.options}>
+        <Link href="/analyze/image">
           <button>
             <h2>
-              <FontAwesomeIcon icon="fa-image" />
+              <FontAwesomeIcon icon={faImage} />
             </h2>
             <p>Analyze Screenshot</p>
           </button>
         </Link>
 
-        <Link to="/email">
+        <Link href="/analyze/email">
           <button>
             <h2>
-              <FontAwesomeIcon icon="fa-t" />
+              <FontAwesomeIcon icon={faT} />
             </h2>
             <p>Analyze Text</p>
           </button>
@@ -37,5 +39,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

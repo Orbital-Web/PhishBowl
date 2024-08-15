@@ -1,0 +1,51 @@
+:root {
+  --color-primary: #AE81DB;
+  --color-secondary: #EC2765;
+  --color-tertiary: #FFD70E;
+  --color-text: #F8F8F2;
+  --color-subtext: #ADA6A0;
+  --color-bg: #272822;
+  --color-subbg: #1E1F1C;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "eurostile";
+}
+
+h1, .text-size1 {font-size: clamp(1.92rem, 3.6vw, 3rem);}
+h2, .text-size2 {font-size: clamp(1.44rem, 2.7vw, 2.25rem);}
+h3, .text-size3 {font-size: clamp(0.96rem, 1.8vw, 1.5rem);}
+p, input, .text-size4 {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
+@media (max-aspect-ratio: 5/4) {
+  h1, .text-size1 {font-size: clamp(1.92rem, 7.2vw, 3rem);}    /* mobile */
+  h2, .text-size2 {font-size: clamp(1.44rem, 5.4vw, 2.25rem);}
+  h3, .text-size3 {font-size: clamp(0.96rem, 3.6vw, 1.5rem);}
+  p, input, .text-size4 {font-size: clamp(0.8rem, 3vw, 1.25rem);}
+}
+
+.text-primary {color: var(--color-primary);}
+.text-secondary {color: var(--color-secondary);}
+.text-tertiary {color: var(--color-tertiary);}
+.text {color: var(--color-text);}
+.subtext {color: var(--color-subtext);}
+
+
+
+/* Quill */
+.ql-toolbar {
+  border: none;
+  border-bottom: 1px solid var(--color-subtext);
+}
+
+.ql-container {
+  border: none;
+  height: 30vh !important;
+}
+
+.ql-toolbar :is(span, .ql-stroke, .ql-fill, .ql-picker) {
+  stroke: var(--color-subtext);
+  color: var(--color-subtext);
+}

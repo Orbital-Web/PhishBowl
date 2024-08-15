@@ -1,37 +1,36 @@
-# Created by https://www.toptal.com/developers/gitignore/api/react,yarn
-# Edit at https://www.toptal.com/developers/gitignore?templates=react,yarn
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-### react ###
-.DS_*
-*.log
-logs
-**/*.backup.*
-**/*.back.*
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
 
-node_modules
-bower_components
+# testing
+/coverage
 
-*.sublime*
+# next.js
+/.next/
+/out/
 
-psd
-thumb
-sketch
+# production
+/build
 
-### yarn ###
-# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+# misc
+.DS_Store
+*.pem
 
-.yarn/*
-!.yarn/releases
-!.yarn/patches
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# if you are NOT using Zero-installs, then:
-# comment the following lines
-!.yarn/cache
+# local env files
+.env*.local
 
-# and uncomment the following lines
-# .pnp.*
+# vercel
+.vercel
 
-# End of https://www.toptal.com/developers/gitignore/api/react,yarn
+# typescript
+*.tsbuildinfo
+next-env.d.ts

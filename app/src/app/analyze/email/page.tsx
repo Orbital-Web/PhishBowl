@@ -1,22 +1,30 @@
+"use client";
+
 import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "./Analyze.css";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-function AnalyzeEmailForm() {
+import styles from "../page.module.css";
+
+export default function AnalyzeEmailPage() {
   const [subject, setSubject] = useState("");
   const [sender, setSender] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState("");
-  const quillRef = useRef(null);
-  const navigate = useNavigate();
+  const quillRef = useRef<ReactQuill | null>(null);
+  const router = useRouter();
 
   // onchange functions
-  const onSubjectChange = (e) => setSubject(e.target.value);
-  const onSenderChange = (e) => setSender(e.target.value);
-  const onBodyChange = (value) => setBody(value);
+  const onSubjectChange = (e: React.FormEvent<HTMLInputElement>) =>
+    setSubject(e.currentTarget.value);
+  const onSenderChange = (e: React.FormEvent<HTMLInputElement>) =>
+    setSender(e.currentTarget.value);
+  const onBodyChange = (value: string) => setBody(value);
 
   // email body toolbar options
   const toolbarOptions = [
@@ -29,40 +37,49 @@ function AnalyzeEmailForm() {
   ];
 
   // submit override
-  const onSubmit = (e) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const plaintextBody = quillRef.current.getEditor().getText();
+    const plaintextBody = quillRef!.current!.getEditor().getText();
     if (!body || plaintextBody === "\n") {
       setError("Body is required.");
       return;
     }
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(body, "text/html");
-    const state = {
-      type: "email",
-      subject,
+    //const parser = new DOMParser();
+    //const doc = parser.parseFromString(body, "text/html");
+    const data = {
       sender,
+      subject,
       body: plaintextBody,
-      html: doc.body.innerHTML,
+      // html: doc.body.innerHTML
     };
-    navigate("/result", { state });
+    const response = await fetch("/api/analyze/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (response.status !== 200) {
+      setError("Something went wrong. Please try again.");
+      return;
+    }
+    const json = await response.json();
+    router.push(`/analyze/result/?response=${JSON.stringify(json)}`);
   };
 
   return (
-    <div className="analyze">
+    <div className={styles.analyze}>
       <form onSubmit={onSubmit} className="text-size4">
         <nav>
-          <Link to="/">
-            <FontAwesomeIcon icon="fa-solid fa-xmark" />
+          <Link href="/">
+            <FontAwesomeIcon icon={faXmark} />
           </Link>
         </nav>
 
         <h3>Enter Email Content</h3>
         <p>Analysis works best with all 3 fields provided.</p>
 
-        <div class="field">
+        <div className={styles.field}>
           <input
             type="text"
             name="subject"
@@ -73,7 +90,7 @@ function AnalyzeEmailForm() {
           />
         </div>
 
-        <div class="field">
+        <div className={styles.field}>
           <input
             type="text"
             name="sender"
@@ -84,7 +101,7 @@ function AnalyzeEmailForm() {
           />
         </div>
 
-        <div class="field">
+        <div className={styles.field}>
           <label>
             Body: <i>(Required)</i>
           </label>
@@ -100,12 +117,10 @@ function AnalyzeEmailForm() {
         </div>
 
         {error && <p className="text-secondary">{error}</p>}
-        <button type="submit" class="text-size4">
+        <button type="submit" className="text-size4">
           Analyze
         </button>
       </form>
     </div>
   );
 }
-
-export default AnalyzeEmailForm;

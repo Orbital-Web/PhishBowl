@@ -66,21 +66,6 @@
     padding: 1rem;
 }
 
-.analyze form .ql-toolbar {
-    border: none;
-    border-bottom: 1px solid var(--color-subtext);
-}
-
-.analyze form .ql-container {
-    border: none;
-    height: 30vh;
-}
-
-.analyze form .ql-toolbar :is(span, .ql-stroke, .ql-fill, .ql-picker) {
-    stroke: var(--color-subtext);
-    color: var(--color-subtext);
-}
-
 .analyze form button {
     border: none;
     border-radius: 0.6rem;
