@@ -1,22 +1,36 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 
-import ReactQuill from "react-quill";
+import ReactQuill, { ReactQuillProps } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { Delta } from "quill";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import styles from "../page.module.css";
 
+const ReactQuillComponent = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill");
+    const Component = ({ ...props }: ReactQuillProps) => <RQ {...props} />;
+    Component.displayName = "ReactQuillComponent";
+    return Component;
+  },
+  {
+    ssr: false,
+  }
+);
+
 export default function AnalyzeEmailPage() {
   const [subject, setSubject] = useState("");
   const [sender, setSender] = useState("");
-  const [body, setBody] = useState("");
+  const [htmlBody, setHtmlBody] = useState("");
+  const [plaintextBody, setPlaintextBody] = useState("");
   const [error, setError] = useState("");
-  const quillRef = useRef<ReactQuill | null>(null);
   const router = useRouter();
 
   // onchange functions
@@ -24,7 +38,15 @@ export default function AnalyzeEmailPage() {
     setSubject(e.currentTarget.value);
   const onSenderChange = (e: React.FormEvent<HTMLInputElement>) =>
     setSender(e.currentTarget.value);
-  const onBodyChange = (value: string) => setBody(value);
+  const onBodyChange = (
+    value: string,
+    delta: Delta,
+    source: string,
+    editor: ReactQuill.UnprivilegedEditor
+  ) => {
+    setHtmlBody(value);
+    setPlaintextBody(editor.getText());
+  };
 
   // email body toolbar options
   const toolbarOptions = [
@@ -40,19 +62,16 @@ export default function AnalyzeEmailPage() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const plaintextBody = quillRef!.current!.getEditor().getText();
-    if (!body || plaintextBody === "\n") {
+    if (plaintextBody === "\n") {
       setError("Body is required.");
       return;
     }
 
-    //const parser = new DOMParser();
-    //const doc = parser.parseFromString(body, "text/html");
     const data = {
       sender,
       subject,
       body: plaintextBody,
-      // html: doc.body.innerHTML
+      // html: htmlBody
     };
     const response = await fetch("/api/analyze/email", {
       method: "POST",
@@ -105,9 +124,8 @@ export default function AnalyzeEmailPage() {
           <label>
             Body: <i>(Required)</i>
           </label>
-          <ReactQuill
-            ref={quillRef}
-            value={body}
+          <ReactQuillComponent
+            value={htmlBody}
             onChange={onBodyChange}
             theme="snow"
             modules={{

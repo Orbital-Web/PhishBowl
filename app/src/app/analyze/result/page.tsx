@@ -1,11 +1,16 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 
-import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 
 import styles from "./page.module.css";
+
+const ChartComponent = dynamic(() => import("react-apexcharts"), {
+  ssr: false,
+});
 
 type AnalysisLabel = "PHISHING" | "LEGITIMATE";
 interface Color {
@@ -92,7 +97,7 @@ function AnalysisGauge({
   };
 
   return (
-    <Chart
+    <ChartComponent
       options={options}
       series={options.series}
       type={options.chart!.type}
@@ -100,62 +105,7 @@ function AnalysisGauge({
   );
 }
 
-// function SubGauge({ label, value, color }) {
-//   const valuecolor = "#ADA6A0";
-
-//   const options = {
-//     chart: {
-//       type: "radialBar",
-//       fontFamily: "eurostile",
-//       sparkline: {
-//         enabled: true,
-//       },
-//     },
-
-//     plotOptions: {
-//       radialBar: {
-//         startAngle: 0,
-//         endAngle: 360,
-//         hollow: {
-//           size: "40%",
-//         },
-//         track: {
-//           background: "#1E1F1C",
-//           dropShadow: {
-//             enabled: true,
-//             opacity: 0.15,
-//           },
-//         },
-//         dataLabels: {
-//           name: {
-//             fontSize: "1.5rem",
-//           },
-//           value: {
-//             formatter: function (val) {
-//               return Number.parseFloat(val).toFixed(2) + "%";
-//             },
-//             color: valuecolor,
-//             fontSize: "1rem",
-//           },
-//         },
-//       },
-//     },
-//     series: [value * 100],
-//     labels: [label],
-//     colors: [color],
-//   };
-
-//   return (
-//     <Chart
-//       options={options}
-//       series={options.series}
-//       type={options.chart.type}
-//       width="110%"
-//     />
-//   );
-// }
-
-export default function ResultsPage() {
+function AnalysisResults() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -174,20 +124,14 @@ export default function ResultsPage() {
           <AnalysisGauge label={result.label} confidence={result.confidence} />
         </div>
       </div>
-
-      {/* <details className="result-details">
-        <summary>Details</summary>
-        <article>
-          <div className="detail-gauge">
-            <SubGauge
-              label="Similarity"
-              value={result.details.similarity}
-              color="#ff0000"
-            />
-            <p>A</p>
-          </div>
-        </article>
-      </details> */}
     </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense>
+      <AnalysisResults />
+    </Suspense>
   );
 }
