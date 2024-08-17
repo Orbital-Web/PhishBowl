@@ -1,25 +1,22 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Delta } from "quill";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import AnalyzeEmail from "@/lib/api/analyzeAPI";
-import ReactQuillComponent, {
-  ReactQuillEditor,
-} from "@/components/form/ReactQuillComponent";
-import { SubmitButton } from "@/components/form/FormElements";
+import FormCloseButton from "@/components/form/FormCloseButton";
+import SubmitButton from "@/components/form/SubmitButton";
+import TextAreaField, { TextAreaEditor } from "@/components/form/TextAreaField";
+import TextField from "@/components/form/TextField";
 import styles from "../page.module.css";
 
 export default function AnalyzeEmailPage() {
   const [subject, setSubject] = useState("");
   const [sender, setSender] = useState("");
+  const [body, setBody] = useState("");
   const [htmlBody, setHtmlBody] = useState("");
-  const [plaintextBody, setPlaintextBody] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -33,93 +30,63 @@ export default function AnalyzeEmailPage() {
     value: string,
     delta: Delta,
     source: string,
-    editor: ReactQuillEditor
+    editor: TextAreaEditor
   ) => {
     setHtmlBody(value);
-    setPlaintextBody(editor.getText());
+    setBody(editor.getText());
   };
-
-  // email body toolbar options
-  const toolbarOptions = [
-    [{ size: ["small", false, "large", "huge"] }],
-    ["bold", "italic", "underline"],
-    [{ color: [] }],
-    [{ align: [] }, { list: "ordered" }, { list: "bullet" }],
-    ["link"],
-    ["clean"],
-  ];
 
   // submit override
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (plaintextBody === "\n") {
+    if (body === "" || body === "\n") {
       setError("Body is required.");
       return;
     }
 
-    const email = {
-      sender,
-      subject,
-      body: plaintextBody,
-    };
     setLoading(true);
-    const result = await AnalyzeEmail(email)
+    const result = await AnalyzeEmail({ sender, subject, body })
       .finally(() => setLoading(false))
       .catch((error) => {
         setError("Something went wrong. Please try again.");
-        throw error;
+        console.log(error);
       });
-    router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
+    if (result)
+      router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
   };
 
   return (
     <div className={styles.analyze}>
-      <form onSubmit={onSubmit} className="text-size4">
-        <nav>
-          <Link href="/">
-            <FontAwesomeIcon icon={faXmark} />
-          </Link>
-        </nav>
+      <form onSubmit={onSubmit}>
+        <FormCloseButton href="/" />
 
         <h3>Enter Email Content</h3>
         <p>Analysis works best with all 3 fields provided.</p>
 
-        <div className={styles.field}>
-          <input
-            type="text"
-            name="subject"
-            value={subject}
-            onChange={onSubjectChange}
-            placeholder="Subject"
-            autoComplete="off"
-          />
-        </div>
+        <TextField
+          value={subject}
+          onChange={onSubjectChange}
+          placeholder="Subject"
+          autoComplete="off"
+        />
 
-        <div className={styles.field}>
-          <input
-            type="text"
-            name="sender"
-            value={sender}
-            onChange={onSenderChange}
-            placeholder="Sender <sender@email.com>"
-            autoComplete="off"
-          />
-        </div>
+        <TextField
+          value={sender}
+          onChange={onSenderChange}
+          placeholder="Sender <sender@email.com>"
+          autoComplete="off"
+        />
 
-        <div className={styles.field}>
-          <label>
-            Body: <i>(Required)</i>
-          </label>
-          <ReactQuillComponent
-            value={htmlBody}
-            onChange={onBodyChange}
-            theme="snow"
-            modules={{
-              toolbar: toolbarOptions,
-            }}
-          />
-        </div>
+        <TextAreaField
+          label={
+            <>
+              Body:<i className="text-error">*</i>
+            </>
+          }
+          value={htmlBody}
+          onChange={onBodyChange}
+        />
 
         {error && <p className="text-error">{error}</p>}
         <SubmitButton text="Analyze" loading={loading}></SubmitButton>

@@ -8,5 +8,6 @@ docker-compose*
 README.md
 LICENSE
 .next
+out
 *.swp
 /scripts

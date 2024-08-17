@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+
 import styles from "./form.module.css";
 
 interface SubmitButtonProps
@@ -7,7 +8,11 @@ interface SubmitButtonProps
   text: string;
   loading: boolean;
 }
-export function SubmitButton({ text, loading, ...props }: SubmitButtonProps) {
+export default function SubmitButton({
+  text,
+  loading,
+  ...props
+}: SubmitButtonProps) {
   return (
     <button
       type="submit"

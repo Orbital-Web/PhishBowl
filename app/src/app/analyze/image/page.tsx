@@ -1,14 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
-
 import AnalyzeEmail from "@/lib/api/analyzeAPI";
-import { SubmitButton } from "@/components/form/FormElements";
+import FormCloseButton from "@/components/form/FormCloseButton";
+import SubmitButton from "@/components/form/SubmitButton";
 import styles from "../page.module.css";
 
 export default function AnalyzeImagePage() {
@@ -46,19 +43,16 @@ export default function AnalyzeImagePage() {
       .finally(() => setLoading(false))
       .catch((error) => {
         setError("Something went wrong. Please try again.");
-        throw error;
+        console.log(error);
       });
-    router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
+    if (result)
+      router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
   };
 
   return (
     <div className={styles.analyze}>
       <form onSubmit={onSubmit} className="text-size4">
-        <nav>
-          <Link href="/">
-            <FontAwesomeIcon icon={faXmark} />
-          </Link>
-        </nav>
+        <FormCloseButton href="/" />
 
         <h3>Upload Email Screenshot</h3>
 
