@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Delta } from "quill";
 
 import AnalyzeEmail from "@/lib/api/analyzeAPI";
+import getRoutes from "@/lib/routes/routes";
 import FormCloseButton from "@/components/form/FormCloseButton";
 import SubmitButton from "@/components/form/SubmitButton";
 import TextAreaField, { TextAreaEditor } from "@/components/form/TextAreaField";
@@ -53,13 +54,13 @@ export default function AnalyzeEmailPage() {
         console.log(error);
       });
     if (result)
-      router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
+      router.push(getRoutes("result", { response: JSON.stringify(result) }));
   };
 
   return (
     <div className={styles.analyze}>
       <form onSubmit={onSubmit}>
-        <FormCloseButton href="/" />
+        <FormCloseButton href={getRoutes("home")} />
 
         <h3>Enter Email Content</h3>
         <p>Analysis works best with all 3 fields provided.</p>

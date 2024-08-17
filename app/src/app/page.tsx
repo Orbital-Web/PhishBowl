@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faT } from "@fortawesome/free-solid-svg-icons";
 
+import getRoutes from "@/lib/routes/routes";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -18,7 +19,7 @@ export default function HomePage() {
       </div>
 
       <div className={styles.options}>
-        <Link href="/analyze/image">
+        <Link href={getRoutes("imageAnalysis")}>
           <button>
             <h2>
               <FontAwesomeIcon icon={faImage} />
@@ -27,7 +28,7 @@ export default function HomePage() {
           </button>
         </Link>
 
-        <Link href="/analyze/email">
+        <Link href={getRoutes("emailAnalysis")}>
           <button>
             <h2>
               <FontAwesomeIcon icon={faT} />

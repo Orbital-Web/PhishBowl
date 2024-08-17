@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import AnalyzeEmail from "@/lib/api/analyzeAPI";
+import getRoutes from "@/lib/routes/routes";
 import FormCloseButton from "@/components/form/FormCloseButton";
 import SubmitButton from "@/components/form/SubmitButton";
 import styles from "../page.module.css";
@@ -46,13 +47,13 @@ export default function AnalyzeImagePage() {
         console.log(error);
       });
     if (result)
-      router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
+      router.push(getRoutes("result", { response: JSON.stringify(result) }));
   };
 
   return (
     <div className={styles.analyze}>
       <form onSubmit={onSubmit} className="text-size4">
-        <FormCloseButton href="/" />
+        <FormCloseButton href={getRoutes("home")} />
 
         <h3>Upload Email Screenshot</h3>
 
