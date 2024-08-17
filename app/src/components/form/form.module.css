@@ -1,0 +1,15 @@
+.primary {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+}
+.secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+.submitButton {
+    border: none;
+    border-radius: 0.6rem;
+    width: 90%;
+    height: 7vh;
+}

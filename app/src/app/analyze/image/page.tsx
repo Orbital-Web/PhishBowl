@@ -7,11 +7,14 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
+import AnalyzeEmail from "@/lib/api/analyzeAPI";
+import { SubmitButton } from "@/components/form/FormElements";
 import styles from "../page.module.css";
 
 export default function AnalyzeImagePage() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const onFileChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -38,18 +41,14 @@ export default function AnalyzeImagePage() {
       return;
     }
 
-    const data = new FormData();
-    data.append("file", file as File);
-    const response = await fetch("/api/analyze/image", {
-      method: "POST",
-      body: data,
-    });
-    if (response.status !== 200) {
-      setError("Something went wrong. Please try again.");
-      return;
-    }
-    const json = await response.json();
-    router.push(`/analyze/result/?response=${JSON.stringify(json)}`);
+    setLoading(true);
+    const result = await AnalyzeEmail(file)
+      .finally(() => setLoading(false))
+      .catch((error) => {
+        setError("Something went wrong. Please try again.");
+        throw error;
+      });
+    router.push(`/analyze/result/?response=${JSON.stringify(result)}`);
   };
 
   return (
@@ -70,10 +69,8 @@ export default function AnalyzeImagePage() {
           required
         />
 
-        {error && <p className="text-secondary">{error}</p>}
-        <button type="submit" className="text-size4">
-          Analyze
-        </button>
+        {error && <p className="text-error">{error}</p>}
+        <SubmitButton text="Analyze" loading={loading}></SubmitButton>
       </form>
     </div>
   );

@@ -6,23 +6,18 @@ import dynamic from "next/dynamic";
 
 import { ApexOptions } from "apexcharts";
 
+import { AnalysisLabel, AnalysisResult } from "@/lib/api/analyzeAPI";
 import styles from "./page.module.css";
 
 const ChartComponent = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-type AnalysisLabel = "PHISHING" | "LEGITIMATE";
 interface Color {
   r: number;
   g: number;
   b: number;
 }
-interface AnalysisResult {
-  label: AnalysisLabel;
-  confidence: number;
-}
-
 function colerp(start: Color, end: Color, value: number) {
   const r = Math.round(start.r + (end.r - start.r) * value);
   const g = Math.round(start.g + (end.g - start.g) * value);
@@ -130,7 +125,7 @@ function AnalysisResults() {
 
 export default function ResultsPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<p>Loading...</p>}>
       <AnalysisResults />
     </Suspense>
   );

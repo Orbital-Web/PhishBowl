@@ -1,7 +1,8 @@
 :root {
-  --color-primary: #AE81DB;
-  --color-secondary: #EC2765;
-  --color-tertiary: #FFD70E;
+  --color-primary: #5858DA;
+  --color-secondary: #B2B2EE;
+  --color-warn: #F5A524;
+  --color-error: #EC2765;
   --color-text: #F8F8F2;
   --color-subtext: #ADA6A0;
   --color-bg: #272822;
@@ -28,7 +29,8 @@ p, input, .text-size4 {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
 
 .text-primary {color: var(--color-primary);}
 .text-secondary {color: var(--color-secondary);}
-.text-tertiary {color: var(--color-tertiary);}
+.text-warn {color: var(--color-warn);}
+.text-error {color: var(--color-error);}
 .text {color: var(--color-text);}
 .subtext {color: var(--color-subtext);}
 
@@ -36,12 +38,14 @@ p, input, .text-size4 {font-size: clamp(0.8rem, 1.5vw, 1.25rem);}
 
 /* Quill */
 .ql-toolbar {
+  margin-top: 0.5rem;
   border: none;
-  border-bottom: 1px solid var(--color-subtext);
+  border-color: var(--color-subtext) !important;
 }
 
 .ql-container {
   border: none;
+  border-color: var(--color-subtext) !important;
   height: 30vh !important;
 }
 
