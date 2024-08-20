@@ -23,19 +23,3 @@
   align-items: center;
   gap: 5vw;
 }
-
-.options button {
-  flex: 1;
-  cursor: pointer;
-  border: none;
-  border-radius: 1rem;
-  background-color: var(--color-subbg);
-  width: 30vw;
-  height: 30vh;
-  color: var(--color-subtext);
-}
-.options button:hover {
-  scale: 1.05;
-  transition: all ease-in 0.05s;
-  color: var(--color-text);
-}

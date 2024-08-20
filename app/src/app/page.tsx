@@ -1,9 +1,7 @@
-import Link from "next/link";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faT } from "@fortawesome/free-solid-svg-icons";
 
 import getRoutes from "@/lib/routes/routes";
+import SquareButton from "@/components/ui/SquareButton";
 import styles from "./page.module.css";
 
 export default function HomePage() {
@@ -19,23 +17,18 @@ export default function HomePage() {
       </div>
 
       <div className={styles.options}>
-        <Link href={getRoutes("imageAnalysis")}>
-          <button>
-            <h2>
-              <FontAwesomeIcon icon={faImage} />
-            </h2>
-            <p>Analyze Screenshot</p>
-          </button>
-        </Link>
-
-        <Link href={getRoutes("emailAnalysis")}>
-          <button>
-            <h2>
-              <FontAwesomeIcon icon={faT} />
-            </h2>
-            <p>Analyze Text</p>
-          </button>
-        </Link>
+        <SquareButton
+          theme="tertiary"
+          href={getRoutes("imageAnalysis")}
+          label="Analyze Screenshot"
+          icon={faImage}
+        />
+        <SquareButton
+          theme="tertiary"
+          href={getRoutes("emailAnalysis")}
+          label="Analyze Text"
+          icon={faT}
+        />
       </div>
     </div>
   );

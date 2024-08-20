@@ -1,0 +1,26 @@
+.primary {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+}
+.secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+.tertiary {
+    background-color: var(--color-subbg);
+    color: var(--color-subtext)
+}
+
+/* SquareButton */
+.squareButton button {
+    cursor: pointer;
+    border: none;
+    border-radius: 1rem;
+    width: 30vw;
+    height: 30vh;
+}
+.squareButton button:hover {
+    scale: 1.05;
+    transition: all ease-in 0.05s;
+    color: var(--color-text);
+}
