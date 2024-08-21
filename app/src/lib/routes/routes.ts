@@ -1,8 +1,12 @@
 // Modify this to add more endpoints
 const routeEndpoints = {
   home: "/",
-  emailAnalysis: "/analyze/email/",
-  imageAnalysis: "/analyze/image/",
+  analyze: "/analyze/",
+  analyzeEmail: "/analyze/email/",
+  analyzeImage: "/analyze/image/",
+  upload: "/upload/",
+  uploadEmail: "/upload/email/",
+  uploadImage: "/upload/image/",
   result: "/result/",
 };
 type routes = keyof typeof routeEndpoints;

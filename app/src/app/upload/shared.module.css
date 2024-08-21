@@ -1,0 +1,37 @@
+.analyze {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.analyze form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    animation: popup 0.3s;
+    margin: none;
+    border-radius: 2rem;
+    background-color: var(--tertiary-dark);
+    padding: 2rem;
+    width: 50vw;
+    color: var(--tertiary-light);
+}
+@media (max-aspect-ratio: 5/4) {
+    .analyze form {
+        width: 80vw;
+    }
+}
+
+@keyframes popup {
+    from { scale: 0.5;}
+    to   { scale: 1;}
+}
+
+.analyze form :is(p, h3) {
+    margin: 0;
+}

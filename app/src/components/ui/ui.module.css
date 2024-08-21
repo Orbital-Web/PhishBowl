@@ -1,14 +1,24 @@
+/* Themes */
 .primary {
-    background-color: var(--color-primary);
-    color: var(--color-text);
+    background-color: var(--primary);
+    color: var(--neutral);
+}
+.primary:hover {
+    background-color: var(--primary-dark);
 }
 .secondary {
-    background-color: var(--color-secondary);
-    color: var(--color-text);
+    background-color: var(--secondary);
+    color: var(--neutral);
+}
+.secondary:hover {
+    background-color: var(--secondary-dark);
 }
 .tertiary {
-    background-color: var(--color-subbg);
-    color: var(--color-subtext)
+    background-color: var(--tertiary-dark);
+    color: var(--tertiary-light);
+}
+.tertiary:hover {
+    color: var(--neutral);
 }
 
 /* SquareButton */
@@ -22,5 +32,4 @@
 .squareButton button:hover {
     scale: 1.05;
     transition: all ease-in 0.05s;
-    color: var(--color-text);
 }

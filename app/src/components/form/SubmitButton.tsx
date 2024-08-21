@@ -7,10 +7,12 @@ interface SubmitButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   loading: boolean;
+  theme: "primary" | "secondary";
 }
 export default function SubmitButton({
   text,
   loading,
+  theme,
   ...props
 }: SubmitButtonProps) {
   return (
@@ -18,7 +20,7 @@ export default function SubmitButton({
       type="submit"
       className={
         `text-size4 ${styles.submitButton} ` +
-        `${styles[loading ? "secondary" : "primary"]}`
+        `${styles[loading ? `${theme}-load` : `${theme}`]}`
       }
       {...props}
       disabled={loading}

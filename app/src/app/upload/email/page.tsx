@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Delta } from "quill";
 
-import AnalyzeEmail from "@/lib/api/analyzeAPI";
+import UploadEmail from "@/lib/api/uploadAPI";
 import getRoutes from "@/lib/routes/routes";
 import FormCloseButton from "@/components/form/FormCloseButton";
 import SubmitButton from "@/components/form/SubmitButton";
@@ -47,23 +47,23 @@ export default function AnalyzeEmailPage() {
     }
 
     setLoading(true);
-    const result = await AnalyzeEmail({ sender, subject, body })
+    const result = await UploadEmail({ sender, subject, body, label: 1.0 })
       .finally(() => setLoading(false))
       .catch((error) => {
         setError("Something went wrong. Please try again.");
         console.log(error);
       });
-    if (result)
-      router.push(getRoutes("result", { response: JSON.stringify(result) }));
+    if (result !== undefined) router.push(getRoutes("home"));
+    // TODO: redirect to success page with stats & alerts
   };
 
   return (
     <div className={styles.analyze}>
       <form onSubmit={onSubmit}>
-        <FormCloseButton href={getRoutes("analyze")} />
+        <FormCloseButton href={getRoutes("upload")} />
 
-        <h3>Analyze Email</h3>
-        <p>Analysis works best with all 3 fields provided.</p>
+        <h3>Upload Email</h3>
+        <p>Please try to enter all 3 fields.</p>
 
         <TextField
           value={subject}
@@ -91,8 +91,8 @@ export default function AnalyzeEmailPage() {
 
         {error && <p className="text-error">{error}</p>}
         <SubmitButton
-          theme="primary"
-          text="Analyze"
+          theme="secondary"
+          text="Upload"
           loading={loading}
         ></SubmitButton>
       </form>

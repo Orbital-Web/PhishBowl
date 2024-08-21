@@ -1,4 +1,7 @@
-import { faImage, faT } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudArrowUp,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
 
 import getRoutes from "@/lib/routes/routes";
 import SquareButton from "@/components/ui/SquareButton";
@@ -8,26 +11,25 @@ export default function HomePage() {
   return (
     <div className={styles.home}>
       <div className={styles.header}>
-        <h1 className="text-primary">Analyze with PhishNet</h1>
+        <h1 className="text-neutral">PhishNet</h1>
         <p className="subtext">
-          PhishNet may anonymize and add your email to the PhishBowl to prevent
-          similar phishing scams in the future. You may disable this in your
-          settings.
+          Analyze an email for phishing scams using PhishNet, or upload an email
+          containing a known scam to the PhishBowl to improve the analysis.
         </p>
       </div>
 
       <div className={styles.options}>
         <SquareButton
-          theme="tertiary"
-          href={getRoutes("imageAnalysis")}
-          label="Analyze Screenshot"
-          icon={faImage}
+          theme="primary"
+          href={getRoutes("analyze")}
+          label="Analyze Email"
+          icon={faMagnifyingGlass}
         />
         <SquareButton
-          theme="tertiary"
-          href={getRoutes("emailAnalysis")}
-          label="Analyze Text"
-          icon={faT}
+          theme="secondary"
+          href={getRoutes("upload")}
+          label="Upload to PhishBowl"
+          icon={faCloudArrowUp}
         />
       </div>
     </div>

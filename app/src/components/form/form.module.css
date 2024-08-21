@@ -1,10 +1,22 @@
 .primary {
-    background-color: var(--color-primary);
-    color: var(--color-text);
+    background-color: var(--primary);
+    color: var(--neutral);
+}
+.primary-load {
+    background-color: var(--primary-light);
+}
+.primary:hover {
+    background-color: var(--primary-dark);
 }
 .secondary {
-    background-color: var(--color-secondary);
-    color: var(--color-text);
+    background-color: var(--secondary);
+    color: var(--neutral);
+}
+.secondary-load {
+    background-color: var(--secondary-light);
+}
+.secondary:hover {
+    background-color: var(--secondary-dark);
 }
 
 
@@ -15,17 +27,20 @@
     width: 90%;
     height: 7vh;
 }
+.submitButton:hover {
+    transition: all ease-in 0.05    s;
+}
 
 
 /* TextField */
 .textField {
     box-sizing: border-box;
     margin-top: 0.5rem;
-    border: 1px solid var(--color-subtext);
-    background-color: var(--color-subbg);
+    border: 1px solid var(--tertiary-light);
+    background-color: var(--tertiary-dark);
     padding: 1rem;
     width: 90%;
-    color: var(--color-subtext);
+    color: var(--tertiary-light);
 }
 
 
@@ -37,12 +52,12 @@
     box-sizing: border-box;
     margin-top: 0.5rem;
     margin-bottom: -4px;
-    border: 1px solid var(--color-subtext);
-    background-color: var(--color-subbg);
+    border: 1px solid var(--tertiary-light);
+    background-color: var(--tertiary-dark);
     padding: 1rem;
     width: 100%;
     height: 36vh;
-    color: var(--color-subtext);
+    color: var(--tertiary-light);
 }
 
 
@@ -56,7 +71,7 @@
     text-decoration: none;
 }
 .formCloseButton a {
-    color: var(--color-subtext);
+    color: var(--tertiary-light);
     text-decoration: none;
 }
 .formCloseButton a:hover {

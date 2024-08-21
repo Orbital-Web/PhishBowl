@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import AnalyzeEmail from "@/lib/api/analyzeAPI";
+import UploadEmail from "@/lib/api/uploadAPI";
 import getRoutes from "@/lib/routes/routes";
 import FormCloseButton from "@/components/form/FormCloseButton";
 import SubmitButton from "@/components/form/SubmitButton";
@@ -40,22 +40,22 @@ export default function AnalyzeImagePage() {
     }
 
     setLoading(true);
-    const result = await AnalyzeEmail(file)
+    const result = await UploadEmail(file)
       .finally(() => setLoading(false))
       .catch((error) => {
         setError("Something went wrong. Please try again.");
         console.log(error);
       });
-    if (result)
-      router.push(getRoutes("result", { response: JSON.stringify(result) }));
+    if (result !== undefined) router.push(getRoutes("home"));
+    // TODO: redirect to success page with stats & alerts
   };
 
   return (
     <div className={styles.analyze}>
       <form onSubmit={onSubmit} className="text-size4">
-        <FormCloseButton href={getRoutes("analyze")} />
+        <FormCloseButton href={getRoutes("upload")} />
 
-        <h3>Analyze Email Screenshot</h3>
+        <h3>Upload Email Screenshot</h3>
 
         <input
           type="file"
@@ -66,8 +66,8 @@ export default function AnalyzeImagePage() {
 
         {error && <p className="text-error">{error}</p>}
         <SubmitButton
-          theme="primary"
-          text="Analyze"
+          theme="secondary"
+          text="Upload"
           loading={loading}
         ></SubmitButton>
       </form>
