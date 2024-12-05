@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /chroma
 
-RUN pip install --no-cache-dir --upgrade chromadb
+RUN pip install --no-cache-dir chromadb==0.5.3
 
 COPY . .
 

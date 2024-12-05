@@ -66,7 +66,7 @@ class GPTPhishNet(PhishNet):
         for i in range(self.retry_count):
             try:
                 response = await self.client.chat.completions.create(
-                    model="GPT-4o",  # Replace with your deployment ID
+                    model="GPT-4o",
                     messages=[
                         {"role": "system", "content": self.context_prompt},
                         {
@@ -79,7 +79,7 @@ class GPTPhishNet(PhishNet):
                 )
                 message = response.choices[0].message.content
                 result = json.loads(message[message.find("{") : message.rfind("}") + 1])
-            except BadRequestError:  # filtered
+            except BadRequestError:  # content filtered
                 result = {
                     "is_phishing": True,
                     "confidence": 8,
