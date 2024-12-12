@@ -4,6 +4,7 @@ import os
 
 from datasets import IterableDataset
 from models import Emails
+from schemas import Email, EmailDocument
 from services.textprocessing import EmailTextProcessor
 
 from .azure_db import AzureDB
@@ -104,6 +105,74 @@ class PhishBowl:
         # return only those that match filter
         matches = await self.db.collection.get(include=[], where=where)
         return len(matches["ids"])
+
+    async def get(self, where: dict = None, limit: int = 0) -> list[EmailDocument]:
+        """Returns all documents in the phish bowl. Search can be narrowed to only those
+        that match the metadata filter.
+
+        Args:
+            where (dict, optional): Metadata filter to retrieve only certain types of
+                documents. See https://docs.trychroma.com/guides#using-where-filters
+                for documentation on metadata filters.
+            limit (int, optional): The maximum number of emails to retrieve. Defaults to
+                0 or retrieve all.
+
+        Returns:
+            list[EmailDocument]: Emails that match the filter or all documents in the
+                phishbowl.
+        """
+        if limit == 0:
+            limit = None
+
+        matches = None
+        if not where:
+            matches = await self.db.collection.get(
+                include=["metadatas", "documents"], limit=limit
+            )
+        else:
+            matches = await self.db.collection.get(
+                include=["metadatas", "documents"], where=where, limit=limit
+            )
+
+        # reformat matches
+        return [
+            EmailDocument(
+                text=text, label="PHISHING" if meta["label"] >= 0.5 else "LEGITIMATE"
+            )
+            for text, meta in zip(matches["documents"], matches["metadatas"])
+        ]
+
+    async def get_similar(self, email: Email, count: int = 10) -> list[EmailDocument]:
+        """Returns documents in the phishbowl in order of their similarity to the
+        reference email.
+
+        Args:
+            email (Email): The reference email.
+            count (int, optional): Number of results to return. Defaults to 10.
+
+        Returns:
+            list[EmailDocument]: Emails in order of semantic similarity to the reference
+                email.
+        """
+        repacked_emails = {
+            "sender": [email.sender],
+            "subject": [email.subject],
+            "body": [email.body],
+        }
+        reference_documents = self.text_processor.to_text(repacked_emails)
+        matches = await self.db.collection.query(
+            query_texts=reference_documents,
+            n_results=count,
+            include=["metadatas", "documents"],
+        )
+
+        # reformat matches
+        return [
+            EmailDocument(
+                text=text, label="PHISHING" if meta["label"] >= 0.5 else "LEGITIMATE"
+            )
+            for text, meta in zip(matches["documents"][0], matches["metadatas"][0])
+        ]
 
     async def clear(self):
         """Removes all documents from the phishbowl. Use with care."""

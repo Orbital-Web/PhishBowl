@@ -24,6 +24,11 @@ class EmailLabel(BaseModel):
     label: float = Field(None, ge=0, le=1)
 
 
+class EmailDocument(BaseModel):
+    text: str
+    label: Literal["LEGITIMATE", "PHISHING"]
+
+
 class AnalysisResponse(BaseModel):
     label: Literal["LEGITIMATE", "PHISHING"]
     confidence: float = Field(None, ge=0, le=1)

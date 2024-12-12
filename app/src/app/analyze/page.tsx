@@ -1,18 +1,19 @@
 import { faImage, faT } from "@fortawesome/free-solid-svg-icons";
 
 import getRoutes from "@/lib/routes/routes";
+import BackButton from "@/components/ui/BackButton";
 import SquareButton from "@/components/ui/SquareButton";
 import styles from "./page.module.css";
 
-export default function HomePage() {
+export default function AnalyzePage() {
   return (
     <div className={styles.home}>
+      <BackButton href={getRoutes("home")} />
       <div className={styles.header}>
         <h1 className="text-primary">Analyze with PhishNet</h1>
         <p className="subtext">
-          PhishNet may anonymize and add your email to the PhishBowl to prevent
-          similar phishing scams in the future. You may disable this in your
-          settings.
+          PhishNet will use an AI to compare your email to other submitted
+          emails to determine whether it is a phish or benign.
         </p>
       </div>
 

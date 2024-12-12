@@ -52,3 +52,12 @@
 .unufooter img {
     height: 8vh;
 }
+
+/* Back Button */
+.backbutton {
+    position: fixed;
+    top: 15vh;
+    left: 18vw;
+    color: var(--tertiary-light);
+    text-decoration: underline;
+}

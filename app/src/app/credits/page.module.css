@@ -1,0 +1,25 @@
+.credits {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5vh;
+  height: 100vh;
+}
+
+.header {
+  width: 45vw;
+  text-align: center;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 5vw;
+}

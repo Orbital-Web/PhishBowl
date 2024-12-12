@@ -13,7 +13,7 @@ import TextAreaField, { TextAreaEditor } from "@/components/form/TextAreaField";
 import TextField from "@/components/form/TextField";
 import styles from "../shared.module.css";
 
-export default function AnalyzeEmailPage() {
+export default function UploadEmailPage() {
   const [subject, setSubject] = useState("");
   const [sender, setSender] = useState("");
   const [body, setBody] = useState("");

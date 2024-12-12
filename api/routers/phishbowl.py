@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from fastapi import APIRouter, HTTPException, Request, UploadFile
 from pydantic import ValidationError
-from schemas import EmailLabel, LabeledEmail
+from schemas import Email, EmailDocument, EmailLabel, LabeledEmail
 from services.imageprocessing import EmailImageProcessor
 from services.phishbowl import PhishBowl
 
@@ -41,6 +41,66 @@ async def count_where(request: Request, where: dict) -> int:
     phishbowl: PhishBowl = request.app.phishbowl
 
     return await phishbowl.count(where=where)
+
+
+# ---------------------------- GET ---------------------------- #
+
+
+@router.get("/get")
+async def get(request: Request, limit: int = 0) -> list[EmailDocument]:
+    """Retrieves all emails in the phishbowl.
+
+    Args:
+        request (Request): The request object.
+        limit (int, optional): The maximum number of emails to retrieve. Defaults to 0
+            or retrieve all.
+
+    Returns:
+        list[EmailDocument]: List of retrieved emails.
+    """
+    phishbowl: PhishBowl = request.app.phishbowl
+
+    return await phishbowl.get(limit=limit)
+
+
+@router.post("/get_where")
+async def get_where(
+    request: Request, where: dict, limit: int = 0
+) -> list[EmailDocument]:
+    """Retrieves all emails in the phishbowl satisfying the metadata filter.
+
+    Args:
+        request (Request): The request object.
+        where (dict): Metadata filter for emails to retrieve.
+        limit (int, optional): The maximum number of emails to retrieve. Defaults to 0
+            or retrieve all.
+
+    Returns:
+        list[EmailDocument]: List of retrieved emails.
+    """
+    phishbowl: PhishBowl = request.app.phishbowl
+
+    return await phishbowl.get(where=where, limit=limit)
+
+
+@router.post("/get_similar")
+async def get_similar(
+    request: Request, email: Email, count: int = 10
+) -> list[EmailDocument]:
+    """Finds the first `count` emails in the phishbowl semantically similar to the input
+    email.
+
+    Args:
+        request (Request): The request object.
+        email (Email): The reference email.
+        count (int, optional): Number of results to return. Defaults to 10.
+
+    Returns:
+        list[EmailDocument]: List of retrieved emails.
+    """
+    phishbowl: PhishBowl = request.app.phishbowl
+
+    return await phishbowl.get_similar(email, count)
 
 
 # ---------------------------- ADD ---------------------------- #
@@ -188,7 +248,7 @@ async def delete_many(
 
 
 @router.delete("/delete_image")
-async def add_image(
+async def delete_image(
     request: Request,
     file: UploadFile,
     label: float,

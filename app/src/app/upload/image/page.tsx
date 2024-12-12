@@ -9,7 +9,7 @@ import FormCloseButton from "@/components/form/FormCloseButton";
 import SubmitButton from "@/components/form/SubmitButton";
 import styles from "../shared.module.css";
 
-export default function AnalyzeImagePage() {
+export default function UploadImagePage() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

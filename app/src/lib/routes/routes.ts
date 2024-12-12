@@ -8,6 +8,7 @@ const routeEndpoints = {
   uploadEmail: "/upload/email/",
   uploadImage: "/upload/image/",
   result: "/result/",
+  credits: "/credits/",
 };
 type routes = keyof typeof routeEndpoints;
 

@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AnalysisResult } from "@/lib/api/analyzeAPI";
 import { AnalysisGauge } from "@/components/results/Gauge";
 import styles from "./page.module.css";
+import getRoutes from "@/lib/routes/routes";
+import BackButton from "@/components/ui/BackButton";
 
 function AnalysisResults() {
   const searchParams = useSearchParams();
@@ -20,6 +22,7 @@ function AnalysisResults() {
 
   return (
     <div className={styles.results}>
+      <BackButton href={getRoutes("analyze")} />
       <div className={styles.summary}>
         <h2 className="subtext">Analysis Results</h2>
         <div className={styles.gauge}>
